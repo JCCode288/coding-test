@@ -4,12 +4,15 @@ load_dotenv() # loading env before importing to ensure package config from env l
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.api_route import api_router
+from context import lifespan
 import uvicorn
 import os
 
 
+
 app = FastAPI(
-    docs_url="/docs"
+    docs_url="/docs", 
+    lifespan=lifespan
 )
 
 app.add_middleware(
