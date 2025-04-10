@@ -1,33 +1,36 @@
-from fastapi import FastAPI, Request
+from dotenv import load_dotenv
+load_dotenv() # loading env before importing to ensure package config from env loaded to app
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes.api_route import api_router
 import uvicorn
-import json
+import os
 
-app = FastAPI()
 
-# Load dummy data
-with open("dummyData.json", "r") as f:
-    DUMMY_DATA = json.load(f)
+app = FastAPI(
+    docs_url="/docs"
+)
 
-@app.get("/api/data")
-def get_data():
-    """
-    Returns dummy data (e.g., list of users).
-    """
-    return DUMMY_DATA
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=[
+        os.environ.get("WHITELIST") # assumed only one origin that whitelisted
+    ],
+    allow_credentials=True,
+    allow_methods=[
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "OPTIONS",
+    ],
+    allow_headers=[
+        "*"
+    ]
+)
 
-@app.post("/api/ai")
-async def ai_endpoint(request: Request):
-    """
-    Accepts a user question and returns a placeholder AI response.
-    (Optionally integrate a real AI model or external service here.)
-    """
-    body = await request.json()
-    user_question = body.get("question", "")
-    
-    # Placeholder logic: echo the question or generate a simple response
-    # Replace with real AI logic as desired (e.g., call to an LLM).
-    return {"answer": f"This is a placeholder answer to your question: {user_question}"}
+app.include_router(api_router) # main app will be in this router
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

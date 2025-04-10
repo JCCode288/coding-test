@@ -1,0 +1,9 @@
+# venv path
+.venv
+
+# cache
+__pycache__
+
+# env
+.env
+.vscode
