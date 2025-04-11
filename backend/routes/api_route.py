@@ -1,19 +1,15 @@
-from fastapi import Request, APIRouter, Depends, Query, HTTPException
-import json
+from fastapi import APIRouter, Depends, Query, HTTPException
 from context import get_db
 from modules.database.models import SalesReps, Skills, Clients, Deals
 from sqlalchemy import select, insert, update, delete
 from sqlalchemy.orm import Session, joinedload
 from dto.options_dto import QueryParam
 from dto.main_dto import AddClientDTO, AddDealDTO, AddRepsDTO, AddSkillDTO, EditDealDTO
+from dto.ai_dto import AIPromptDTO
 from typing import Annotated
 
 
 api_router = APIRouter(prefix='/api')
-
-# Load dummy data
-with open("../" + "dummyData.json", "r") as f: # path perspective of main.py
-    DUMMY_DATA = json.load(f)
 
 @api_router.get("/sales-reps", status_code=200)
 async def get_reps(query: Annotated[QueryParam, Query()], db: Session = Depends(get_db)):
@@ -215,22 +211,6 @@ async def delete_deal(id: int, db: Session = Depends(get_db)):
     
     return data
     
-    
-    
-    
-
-@api_router.post("/ai", status_code=201)
-async def ai_endpoint(request: Request, db: Session = Depends(get_db)):
-    """
-    Accepts a user question and returns a placeholder AI response.
-    (Optionally integrate a real AI model or external service here.)
-    """
-    body = await request.json()
-    user_question = body.get("question", "")
-    
-    # Placeholder logic: echo the question or generate a simple response
-    # Replace with real AI logic as desired (e.g., call to an LLM).
-    return {"answer": f"This is a placeholder answer to your question: {user_question}"}
 
 @api_router.get('/skills', status_code=200)
 async def get_skills(query: Annotated[QueryParam, Query()], db: Session = Depends(get_db)):
@@ -262,4 +242,17 @@ async def add_skill(body: AddSkillDTO, db: Session = Depends(get_db)):
 
     db.commit()
     
-    return data
+    return data    
+
+@api_router.post("/ai", status_code=201)
+async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
+    """
+    Accepts a user question and returns a placeholder AI response.
+    (Optionally integrate a real AI model or external service here.)
+    """
+    
+    user = body.user_id
+    
+    # Placeholder logic: echo the question or generate a simple response
+    # Replace with real AI logic as desired (e.g., call to an LLM).
+    return {"answer": f"This is a placeholder answer to your question: {body.prompt}"}
