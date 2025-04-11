@@ -32,15 +32,15 @@ class SalesReps(Base):
     skills: Mapped[List["Skills"]] = relationship(
         secondary=rep_skill_table, 
         back_populates="reps",
-        lazy="joined"
+        
     )
     deals: Mapped[List["Deals"]] = relationship(
         back_populates="reps",
-        lazy="joined"
+        
     )
     clients: Mapped[List["Clients"]] = relationship(
         back_populates="reps",
-        lazy="joined"
+        
     )
     
     
@@ -51,7 +51,7 @@ class Skills(Base):
     reps: Mapped[List["SalesReps"]] = relationship(
         secondary=rep_skill_table,
         back_populates="skills", 
-        lazy="joined"
+        
     )
     
 class Clients(Base):
@@ -69,17 +69,18 @@ class Clients(Base):
         nullable=False,
         index=True
     )
-    reps_id: Mapped[int] = mapped_column(ForeignKey("SalesReps.id"))
     industry: Mapped[str] = mapped_column(String(128), nullable=True)
+    
+    reps_id: Mapped[int] = mapped_column(ForeignKey("SalesReps.id"))
     reps: Mapped["SalesReps"] = relationship(
         back_populates='clients',
-        lazy="joined"
+        
     )
     
 class Deals(Base):
     __tablename__ = "Deals"
     id: Mapped[int] = mapped_column(primary_key=True)
-    value: Mapped[int] = mapped_column(BigInteger(), nullable=False)
+    value: Mapped[str] = mapped_column(BigInteger(), nullable=False)
     status: Mapped[str] = mapped_column(
         String(64), 
         nullable=False, 
@@ -90,7 +91,7 @@ class Deals(Base):
     reps_id: Mapped[int] = mapped_column(ForeignKey("SalesReps.id"))
     reps: Mapped["SalesReps"] = relationship(
         back_populates="deals",
-        lazy="joined"
+        
     )
     
     
