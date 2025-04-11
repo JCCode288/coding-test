@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
 
 async def get_db():
   engine = context['db']
-  session = Session(engine)
+  session = Session(engine, autoflush=True)
   
   yield session
   
