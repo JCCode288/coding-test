@@ -1,39 +1,8 @@
-"use client";
+import PromptSection from "@/components/prompt-section";
+import { getSalesReps } from "@/lib/api";
 
-import { useState, useEffect } from "react";
-
-export default function Home() {
-   const [users, setUsers] = useState([]);
-   const [loading, setLoading] = useState(true);
-   const [question, setQuestion] = useState("");
-   const [answer, setAnswer] = useState("");
-
-   useEffect(() => {
-      fetch("http://localhost:8000/api/sales-reps")
-         .then((res) => res.json())
-         .then((data) => {
-            setUsers(data || []);
-            setLoading(false);
-         })
-         .catch((err) => {
-            console.error("Failed to fetch data:", err);
-            setLoading(false);
-         });
-   }, []);
-
-   const handleAskQuestion = async () => {
-      try {
-         const response = await fetch("http://localhost:8000/api/ai", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question }),
-         });
-         const data = await response.json();
-         setAnswer(data.answer);
-      } catch (error) {
-         console.error("Error in AI request:", error);
-      }
-   };
+export default async function Home() {
+   const users = await getSalesReps();
 
    return (
       <div style={{ padding: "2rem" }}>
@@ -41,36 +10,16 @@ export default function Home() {
 
          <section style={{ marginBottom: "2rem" }}>
             <h2>Dummy Data</h2>
-            {loading ? (
-               <p>Loading...</p>
-            ) : (
-               <ul>
-                  {users.map((user) => (
-                     <li key={user.id}>
-                        {user.name} - {user.role}
-                     </li>
-                  ))}
-               </ul>
-            )}
+            <ul>
+               {users.map((user) => (
+                  <li key={user.id}>
+                     {user.name} - {user.role}
+                  </li>
+               ))}
+            </ul>
          </section>
 
-         <section>
-            <h2>Ask a Question (AI Endpoint)</h2>
-            <div>
-               <input
-                  type="text"
-                  placeholder="Enter your question..."
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-               />
-               <button onClick={handleAskQuestion}>Ask</button>
-            </div>
-            {answer && (
-               <div style={{ marginTop: "1rem" }}>
-                  <strong>AI Response:</strong> {answer}
-               </div>
-            )}
-         </section>
+         <PromptSection />
       </div>
    );
 }
