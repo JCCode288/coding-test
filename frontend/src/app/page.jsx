@@ -1,8 +1,7 @@
-import PromptSection from "@/components/prompt-section";
 import { getSalesReps } from "@/lib/api";
 
 export default async function Home() {
-   const users = await getSalesReps();
+   const reps = await getSalesReps();
 
    return (
       <div style={{ padding: "2rem" }}>
@@ -11,15 +10,13 @@ export default async function Home() {
          <section style={{ marginBottom: "2rem" }}>
             <h2>Dummy Data</h2>
             <ul>
-               {users.map((user) => (
-                  <li key={user.id}>
-                     {user.name} - {user.role}
+               {reps.map((rep) => (
+                  <li key={rep.id}>
+                     {rep.name} - {rep.role}
                   </li>
                ))}
             </ul>
          </section>
-
-         <PromptSection />
       </div>
    );
 }
