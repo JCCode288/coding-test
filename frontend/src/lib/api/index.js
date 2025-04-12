@@ -4,15 +4,36 @@ import Axios from "@/utils/axios.base";
 import BE_Routes from "@/utils/constants/backend.routes";
 import { cookies } from "next/headers";
 
-export async function getSalesReps() {
+export async function getSalesReps(page = 1, limit = 10) {
    try {
-      const { data } = await Axios.get(BE_Routes.SALES_REPS);
+      const query = new URLSearchParams();
+      query.append("page", page);
+      query.append("limit", limit);
+
+      const url = `${BE_Routes.SALES_REPS}?${query.toString()}`;
+
+      const { data } = await Axios.get(url);
 
       return data;
    } catch (err) {
       console.log("=== Get Sales Error ===");
       console.log(err);
       console.log("=== Get Sales Error ===");
+      throw err;
+   }
+}
+export async function getRepsById(id) {
+   try {
+      const url = `${BE_Routes.SALES_REPS}/${id}`;
+
+      const { data } = await Axios.get(url);
+
+      return data;
+   } catch (err) {
+      console.log("=== Get Rep By ID Error ===");
+      console.log(err);
+      console.log("=== Get Rep By ID Error ===");
+
       throw err;
    }
 }
@@ -43,6 +64,21 @@ export async function getClients() {
       throw err;
    }
 }
+export async function getClientsById(id) {
+   try {
+      const url = `${BE_Routes.CLIENTS}/${id}`;
+
+      const { data } = await Axios.get(url);
+
+      return data;
+   } catch (err) {
+      console.log("=== Get Rep By ID Error ===");
+      console.log(err);
+      console.log("=== Get Rep By ID Error ===");
+
+      throw err;
+   }
+}
 export async function addClients(clientData) {
    try {
       const { data } = await Axios.post(BE_Routes.CLIENTS, clientData);
@@ -64,6 +100,21 @@ export async function getDeals() {
       console.log("=== Get Deals Error ===");
       console.log(err);
       console.log("=== Get Deals Error ===");
+      throw err;
+   }
+}
+export async function getDealsById(id) {
+   try {
+      const url = `${BE_Routes.DEALS}/${id}`;
+
+      const { data } = await Axios.get(url);
+
+      return data;
+   } catch (err) {
+      console.log("=== Get Rep By ID Error ===");
+      console.log(err);
+      console.log("=== Get Rep By ID Error ===");
+
       throw err;
    }
 }
