@@ -43,7 +43,6 @@ class SalesReps(Base):
         
     )
     
-    
 class Skills(Base):
     __tablename__ = "Skills"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -51,6 +50,24 @@ class Skills(Base):
     reps: Mapped[List["SalesReps"]] = relationship(
         secondary=rep_skill_table,
         back_populates="skills", 
+        
+    )
+ 
+    
+class Deals(Base):
+    __tablename__ = "Deals"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    value: Mapped[str] = mapped_column(BigInteger(), nullable=False)
+    status: Mapped[str] = mapped_column(
+        String(64), 
+        nullable=False, 
+        default="In Progress"
+    ) # easier and simpler status implementation
+    client: Mapped[str] = mapped_column(String(255), ForeignKey("Clients.name"), nullable=False)
+    
+    reps_id: Mapped[int] = mapped_column(ForeignKey("SalesReps.id"))
+    reps: Mapped["SalesReps"] = relationship(
+        back_populates="deals",
         
     )
     
@@ -76,24 +93,8 @@ class Clients(Base):
         back_populates='clients',
         
     )
-    
-class Deals(Base):
-    __tablename__ = "Deals"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    value: Mapped[str] = mapped_column(BigInteger(), nullable=False)
-    status: Mapped[str] = mapped_column(
-        String(64), 
-        nullable=False, 
-        default="In Progress"
-    ) # easier and simpler status implementation
-    client: Mapped[str] = mapped_column(String(255), nullable=False)
-    
-    reps_id: Mapped[int] = mapped_column(ForeignKey("SalesReps.id"))
-    reps: Mapped["SalesReps"] = relationship(
-        back_populates="deals",
-        
-    )
-    
-    
-    
-    
+    deals: Mapped[List["Deals"]] = relationship(
+        "Deals",
+        primaryjoin="Clients.name==Deals.client",
+        backref="Deals"
+    )    

@@ -17,7 +17,7 @@ export default function PromptSection() {
    };
 
    return (
-      <section>
+      <section className="ml-8">
          <h2>Ask a Question (AI Endpoint)</h2>
          <div>
             <input

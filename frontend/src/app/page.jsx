@@ -1,22 +1,20 @@
+import PageHeader from "@/components/page-header";
+import RepsCard from "@/components/reps-card";
 import { getSalesReps } from "@/lib/api";
 
-export default async function Home() {
-   const reps = await getSalesReps();
+export default async function HomePage({}) {
+   const { data: reps } = await getSalesReps();
 
    return (
-      <div style={{ padding: "2rem" }}>
-         <h1>Next.js + FastAPI Sample</h1>
-
-         <section style={{ marginBottom: "2rem" }}>
-            <h2>Dummy Data</h2>
-            <ul>
+      <>
+         <PageHeader name="Representatives" />
+         <section className="m-8">
+            <div className="flex flex-col gap-4 flex-wrap">
                {reps.map((rep) => (
-                  <li key={rep.id}>
-                     {rep.name} - {rep.role}
-                  </li>
+                  <RepsCard key={rep.id} reps={rep} />
                ))}
-            </ul>
+            </div>
          </section>
-      </div>
+      </>
    );
 }

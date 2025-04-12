@@ -1,17 +1,22 @@
+import PageHeader from "@/components/page-header";
 import { getDeals } from "@/lib/api";
 
 export default async function DealsPage() {
-   const deals = await getDeals();
+   const { data: deals } = await getDeals();
 
    return (
-      <div>
-         {deals.map((dl) => {
-            return (
-               <div key={dl.id}>
-                  {dl.reps.name} - {dl.client} - {dl.value}
-               </div>
-            );
-         })}
-      </div>
+      <>
+         <PageHeader name="Deals" />
+
+         <section className="m-8">
+            {deals.map((dl) => {
+               return (
+                  <div key={dl.id}>
+                     {dl.reps.name} - {dl.client} - {dl.value}
+                  </div>
+               );
+            })}
+         </section>
+      </>
    );
 }

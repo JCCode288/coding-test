@@ -7,30 +7,70 @@ from dto.options_dto import QueryParam
 from dto.main_dto import AddClientDTO, AddDealDTO, AddRepsDTO, AddSkillDTO, EditDealDTO
 from dto.ai_dto import AIPromptDTO
 from typing import Annotated
-
+from utils.pagination import get_pagination
 
 api_router = APIRouter(prefix='/api')
 
 @api_router.get("/sales-reps", status_code=200)
-async def get_reps(query: Annotated[QueryParam, Query()], db: Session = Depends(get_db)):
+async def get_reps(
+    query: Annotated[QueryParam, Query()], 
+    db: Session = Depends(get_db)
+):
     """
     Returns dummy data (e.g., list of users).
     """
     
+    offset = (query.page-1) * query.limit
+    
     stmt = (
         select(SalesReps)
+        .options(
+            joinedload(SalesReps.skills)
+        )
+    )
+    
+    if query.query is not None and query.name == "name":
+        stmt = stmt.where(SalesReps.name.contains(query.query))
+ 
+    # Pagination
+    pagination = get_pagination(
+        db, 
+        stmt,
+        query.limit,
+        query.page,
+    )    
+    
+    stmt = (
+        stmt
+        .limit(query.limit)
+        .offset(offset)
+    )
+    
+    data = db.scalars(stmt).unique().all()
+       
+    return {"data": data, "pagination": pagination}
+        
+@api_router.get("/sales-reps/{id}")
+async def get_rep_by_id(id: int, db: Session = Depends(get_db)):
+    stmt = (
+        select(SalesReps)
+        .where(SalesReps.id == id)
         .options(
             joinedload(SalesReps.clients),
             joinedload(SalesReps.deals),
             joinedload(SalesReps.skills)
         )
     )
-        
-    return db.scalars(stmt).unique().all()
     
+    data = db.scalars(stmt).unique().one()
+    
+    return {"data": data}
 
 @api_router.post('/sales-reps', status_code=201)
-async def add_rep(body: AddRepsDTO, db: Session = Depends(get_db)):
+async def add_rep(
+    body: AddRepsDTO, 
+    db: Session = Depends(get_db)
+):
     """
     Add Sales Representative
     """
@@ -54,7 +94,7 @@ async def add_rep(body: AddRepsDTO, db: Session = Depends(get_db)):
     db.add(reps)
     db.commit()
     
-    return body
+    return {"data": body}
 
 @api_router.get('/clients', status_code=200)
 async def get_clients(query: Annotated[QueryParam, Query()], db: Session 
@@ -69,7 +109,42 @@ async def get_clients(query: Annotated[QueryParam, Query()], db: Session
         .options(joinedload(Clients.reps))
     )
     
-    return db.scalars(stmt).unique().all()
+    if query.query is not None:
+        stmt = stmt.where(Clients.name.ilike(f"%{query.query}%"))
+    
+    # Pagination
+    pagination = get_pagination(
+        db, 
+        stmt, 
+        query.limit, 
+        query.page
+    )
+    
+    offset = (query.page - 1) * query.limit
+    stmt = (
+        stmt
+        .limit(query.limit)
+        .offset(offset)
+    )
+    
+    data = db.scalars(stmt).unique().all()
+    
+    return {"data": data, "pagination": pagination}
+
+@api_router.get("/clients/{id}", status_code=200)
+async def get_client_by_id(id: int, db: Session = Depends(get_db)):
+    stmt = (
+        select(Clients)
+        .where(Clients.id == id)
+        .options(
+            joinedload(Clients.reps),
+            joinedload(Clients.deals),
+        )
+    )
+    
+    data = db.scalars(stmt).unique().one()
+    
+    return {"data": data}
 
 @api_router.post('/clients', status_code=201)
 async def add_client(body: AddClientDTO, db: Session = Depends(get_db)):
@@ -104,7 +179,7 @@ async def add_client(body: AddClientDTO, db: Session = Depends(get_db)):
     data = db.execute(stmt).mappings().one()
     db.commit()
     
-    return data
+    return {"data": data}
 
 @api_router.get("/deals", status_code=200)
 async def get_deals(query: Annotated[QueryParam, Query()], db: Session = Depends(get_db)):
@@ -119,7 +194,40 @@ async def get_deals(query: Annotated[QueryParam, Query()], db: Session = Depends
         )
     )
     
-    return db.scalars(stmt).unique().all()
+    if query.query is not None:
+        stmt = stmt.where(Deals.client.ilike(query.query))
+        
+    pagination = get_pagination(
+        db,
+        stmt,
+        query.limit,
+        query.page,
+    )
+    
+    offset = (query.page - 1) * query.limit
+    stmt = (
+        stmt
+        .limit(query.limit)
+        .offset(offset)
+    )
+    
+    data = db.scalars(stmt).unique().all()
+    
+    return {"data": data, "pagination": pagination}
+
+@api_router.get("/deals/{id}", status_code=200)
+async def get_deals_by_id(id: int, db: Session = Depends(get_db)):
+    stmt = (
+        select(Deals)
+        .where(Deals.id == id)
+        .options(
+            joinedload(Deals.reps)
+        )
+    )
+    
+    data = db.scalars(stmt).unique().one()
+    
+    return {"data": data}
 
 @api_router.post("/deals", status_code=201)
 async def add_deal(body: AddDealDTO, db: Session = Depends(get_db)):
@@ -140,8 +248,7 @@ async def add_deal(body: AddDealDTO, db: Session = Depends(get_db)):
     inserted = db.execute(stmt).mappings().one()
     db.commit()
     
-    return inserted
-    
+    return {"data": inserted}
 
 @api_router.put("/deals/{id}", status_code=201)
 async def update_deal(id: int, body: EditDealDTO, db: Session = Depends(get_db)):
@@ -179,11 +286,8 @@ async def update_deal(id: int, body: EditDealDTO, db: Session = Depends(get_db))
     updated_deal = db.execute(update_stmt).mappings().one()
     db.commit()
     
-    return updated_deal
+    return {"data": updated_deal}
     
-    
-    
-
 @api_router.delete("/deals/{id}", status_code=200)
 async def delete_deal(id: int, db: Session = Depends(get_db)):
     """
@@ -209,11 +313,10 @@ async def delete_deal(id: int, db: Session = Depends(get_db)):
     data = db.execute(delete_stmt).mappings().one()
     db.commit()
     
-    return data
-    
+    return {"data": data}
 
 @api_router.get('/skills', status_code=200)
-async def get_skills(query: Annotated[QueryParam, Query()], db: Session = Depends(get_db)):
+async def get_skills(query: str | None = None, db: Session = Depends(get_db)):
     """
     Get all skills for sales reps
     """
@@ -222,8 +325,30 @@ async def get_skills(query: Annotated[QueryParam, Query()], db: Session = Depend
         select(Skills)
     )
     
-    return db.scalars(stmt).unique().all()
+    if query is not None:
+        stmt = stmt.where(Skills.name.ilike(f"%{query}%"))
+    
+    data = db.scalars(stmt).unique().all()
+    
+    return {"data": data}
 
+@api_router.get('/skills/{id}', status_code=200)
+async def get_skill_by_id(id: int, db: Session = Depends(get_db)):
+    """
+    Get skill based on id with their sales reps
+    """
+    
+    stmt = (
+        select(Skills)
+        .where(Skills.id == id)
+        .options(
+            joinedload(Skills.reps)
+        )
+    )
+    
+    data = db.scalars(stmt).unique().one()
+    
+    return {"data": data}
 
 @api_router.post('/skills', status_code=201)
 async def add_skill(body: AddSkillDTO, db: Session = Depends(get_db)):
@@ -242,7 +367,7 @@ async def add_skill(body: AddSkillDTO, db: Session = Depends(get_db)):
 
     db.commit()
     
-    return data    
+    return {"data": data}    
 
 @api_router.post("/ai", status_code=201)
 async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
