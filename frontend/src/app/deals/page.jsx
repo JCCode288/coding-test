@@ -8,7 +8,7 @@ export default async function DealsPage() {
       <>
          <PageHeader name="Deals" />
 
-         <section className="m-8">
+         <section className="m-8 flex-1">
             {deals.map((dl) => {
                return (
                   <div key={dl.id}>

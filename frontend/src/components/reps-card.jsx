@@ -18,7 +18,8 @@ export default function RepsCard({ reps }) {
          <CardHeader>
             <CardTitle>{reps.name}</CardTitle>
             <CardDescription>
-               {reps.region} - {reps.role}
+               <h4 className="font-light">{reps.role}</h4>
+               <h5 className="font-light text-xs">{reps.region}</h5>
             </CardDescription>
          </CardHeader>
          <CardContent>

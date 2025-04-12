@@ -5,5 +5,5 @@ export default async function RepsDetail({ params }) {
 
    const { data: rep } = await getRepsById(id);
 
-   return <>Reps Detail {JSON.stringify(rep)}</>;
+   return <div className="flex-1">Reps Detail {JSON.stringify(rep)}</div>;
 }

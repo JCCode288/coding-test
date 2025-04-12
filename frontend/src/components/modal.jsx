@@ -10,8 +10,10 @@ export default function Modal({ children, title }) {
 
    return (
       <Dialog open onOpenChange={handleClose}>
-         <DialogTitle>{title}</DialogTitle>
-         <DialogContent>{children}</DialogContent>
+         <DialogContent className="flex-1 min-w-1/2 min-h-[80dvh]">
+            <DialogTitle>{title}</DialogTitle>
+            {children}
+         </DialogContent>
       </Dialog>
    );
 }

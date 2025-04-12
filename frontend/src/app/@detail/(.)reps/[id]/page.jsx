@@ -7,7 +7,7 @@ export default async function RepsDetail({ params }) {
 
    return (
       <Modal title="Representative Detail">
-         Reps detail {JSON.stringify(rep)}
+         <p className="text-wrap">Reps detail {JSON.stringify(rep)}</p>
       </Modal>
    );
 }
