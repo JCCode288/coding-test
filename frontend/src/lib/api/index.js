@@ -52,9 +52,14 @@ export async function addSalesReps(salesRepsData) {
       throw err;
    }
 }
-export async function getClients() {
+export async function getClients(page = 1, limit = 10) {
    try {
-      const { data } = await Axios.get(BE_Routes.CLIENTS);
+      const query = new URLSearchParams();
+      query.append("page", page);
+      query.append("limit", limit);
+
+      const url = `${BE_Routes.CLIENTS}?${query.toString()}`;
+      const { data } = await Axios.get(url);
 
       return data;
    } catch (err) {
@@ -157,7 +162,32 @@ export async function deleteDeals(id) {
       throw err;
    }
 }
+export async function getSkills() {
+   try {
+      const { data } = await Axios.get(BE_Routes.SKILLS);
 
+      return data;
+   } catch (err) {
+      console.log("=== Get Deals Error ===");
+      console.log(err);
+      console.log("=== Get Deals Error ===");
+      throw err;
+   }
+}
+export async function getSkillById(id) {
+   try {
+      const url = `${BE_Routes.SALES_REPS}/${id}`;
+      const { data } = await Axios.get(url);
+
+      return data;
+   } catch (err) {
+      console.log("=== Get Rep By ID Error ===");
+      console.log(err);
+      console.log("=== Get Rep By ID Error ===");
+
+      throw err;
+   }
+}
 export async function promptAI(prompt) {
    try {
       const cookie = await cookies();
