@@ -1,13 +1,11 @@
 import Modal from "@/components/modal";
-import { getRepsById } from "@/lib/api";
+import { getDealsById } from "@/lib/api";
 
-export default async function RepsDetail({ params }) {
+export default async function DealDetail({ params }) {
    const { id } = await params;
-   const { data: rep } = await getRepsById(id);
+   const { data: deal } = await getDealsById(id);
 
    return (
-      <Modal title="Representative Detail">
-         Reps detail {JSON.stringify(rep)}
-      </Modal>
+      <Modal title="Deal Detail">Deal detail {JSON.stringify(deal)}</Modal>
    );
 }
