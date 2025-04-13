@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { HoverCard, HoverCardTrigger } from "./ui/hover-card";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SkillsDetail from "./skill-detail";
 
 export function SkillBadge({ skill, repsId }) {
@@ -13,14 +13,12 @@ export function SkillBadge({ skill, repsId }) {
 
    return (
       <HoverCard openDelay={800} onOpenChange={handleOpen}>
-         <HoverCardTrigger>
-            <Badge
-               variant="outline"
-               className="border-green-600 bg-green-600 bg-opacity-30 text-green-950 cursor-pointer active:bg-opacity-50"
-            >
-               {skill.name}
-            </Badge>
-         </HoverCardTrigger>
+         <Badge
+            variant="outline"
+            className="border-green-600 bg-green-600 bg-opacity-30 text-green-950 cursor-pointer active:bg-opacity-50 hover:bg-opacity-70"
+         >
+            <HoverCardTrigger>{skill.name}</HoverCardTrigger>
+         </Badge>
          {isOpen && <SkillsDetail repsId={repsId} id={skill.id} />}
       </HoverCard>
    );
