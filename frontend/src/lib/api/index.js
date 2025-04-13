@@ -176,7 +176,7 @@ export async function getSkills() {
 }
 export async function getSkillById(id) {
    try {
-      const url = `${BE_Routes.SALES_REPS}/${id}`;
+      const url = `${BE_Routes.SKILLS}/${id}`;
       const { data } = await Axios.get(url);
 
       return data;

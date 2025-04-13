@@ -380,4 +380,6 @@ async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
     
     # Placeholder logic: echo the question or generate a simple response
     # Replace with real AI logic as desired (e.g., call to an LLM).
-    return {"answer": f"This is a placeholder answer to your question: {body.prompt}"}
+    data = {"answer": f"This is a placeholder answer to your question: {body.prompt}"}
+    
+    return {"data": data}

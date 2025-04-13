@@ -25,11 +25,13 @@ export default function RepsCard({ reps }) {
          <CardContent>
             <div className="flex flex-wrap flex-1 gap-1">
                {reps.skills.map((sk) => {
-                  return <SkillBadge skill={sk} key={sk.id} />;
+                  return (
+                     <SkillBadge repsId={reps.id} skill={sk} key={sk.id} />
+                  );
                })}
             </div>
          </CardContent>
-         <CardFooter>
+         <CardFooter className="justify-end">
             <Link href={"/reps/" + reps.id}>
                <Button variant="outline">Detail</Button>
             </Link>
