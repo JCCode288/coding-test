@@ -8,6 +8,7 @@ from dto.main_dto import AddClientDTO, AddDealDTO, AddRepsDTO, AddSkillDTO, Edit
 from dto.ai_dto import AIPromptDTO
 from typing import Annotated
 from utils.pagination import get_pagination
+import json
 
 api_router = APIRouter(prefix='/api')
 
@@ -337,18 +338,21 @@ async def get_skill_by_id(id: int, db: Session = Depends(get_db)):
     """
     Get skill based on id with their sales reps
     """
-    
-    stmt = (
-        select(Skills)
-        .where(Skills.id == id)
-        .options(
-            joinedload(Skills.reps)
+    try:
+        
+        data = (
+            db
+            .query(Skills)
+            .where(Skills.id == id)
+            .options(
+                joinedload(Skills.reps)
+            )
+            .one()
         )
-    )
-    
-    data = db.scalars(stmt).unique().one()
-    
-    return {"data": data}
+            
+        return {"data": data}
+    except Exception as err:
+        return None
 
 @api_router.post('/skills', status_code=201)
 async def add_skill(body: AddSkillDTO, db: Session = Depends(get_db)):

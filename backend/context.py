@@ -9,7 +9,6 @@ context = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    context['db'] = init_db()
     # migrate() # uncomment to migrate initial data
     
     yield 
@@ -17,8 +16,7 @@ async def lifespan(app: FastAPI):
     return
 
 async def get_db():
-  engine = context['db']
-  session = Session(engine, autoflush=True)
+  db = init_db()
+  session = Session(db)
   
   yield session
-  

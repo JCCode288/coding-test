@@ -47,10 +47,10 @@ export default function SkillsDetail({ id, repsId }) {
                <div className="flex flex-col gap-1">
                   {otherReps.map((rep) => {
                      return (
-                        <Link href={"/reps/" + rep.id}>
+                        <Link key={rep.id} href={"/reps/" + rep.id}>
                            <Card className="hover:bg-gray-100 active:bg-gray-200">
                               <CardTitle className="px-2">
-                                 {rep.name}
+                                 <h3>{rep.name}</h3>
                               </CardTitle>
                               <CardDescription className="px-2">
                                  <p className="text-sm font-light">
