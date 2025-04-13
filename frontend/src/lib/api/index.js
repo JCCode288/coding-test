@@ -98,7 +98,12 @@ export async function addClients(clientData) {
 }
 export async function getDeals() {
    try {
-      const { data } = await Axios.get(BE_Routes.DEALS);
+      const query = new URLSearchParams();
+      query.append("limit", 15);
+      query.append("page", 1);
+
+      const url = `${BE_Routes.DEALS}?${query.toString()}`;
+      const { data } = await Axios.get(url);
 
       return data;
    } catch (err) {
