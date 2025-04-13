@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
 from context import get_db
 from modules.database.models import SalesReps, Skills, Clients, Deals
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import select, insert, update, delete, desc
 from sqlalchemy.orm import Session, joinedload
 from dto.options_dto import QueryParam
 from dto.main_dto import AddClientDTO, AddDealDTO, AddRepsDTO, AddSkillDTO, EditDealDTO
@@ -190,6 +190,7 @@ async def get_deals(query: Annotated[QueryParam, Query()], db: Session = Depends
     
     stmt = (
         select(Deals)
+        .order_by(desc(Deals.updated_at))
         .options(
             joinedload(Deals.reps)
         )
@@ -222,7 +223,8 @@ async def get_deals_by_id(id: int, db: Session = Depends(get_db)):
         select(Deals)
         .where(Deals.id == id)
         .options(
-            joinedload(Deals.reps)
+            joinedload(Deals.reps),
+            joinedload(Deals.client_joined)
         )
     )
     
