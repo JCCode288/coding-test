@@ -70,6 +70,10 @@ class Deals(Base):
         back_populates="deals",
         
     )
+    client_joined: Mapped["Clients"] = relationship(
+        "Clients",
+        primaryjoin="Clients.name==Deals.client",
+    )
     
 class Clients(Base):
     __tablename__ = "Clients"
@@ -96,5 +100,4 @@ class Clients(Base):
     deals: Mapped[List["Deals"]] = relationship(
         "Deals",
         primaryjoin="Clients.name==Deals.client",
-        backref="Deals"
     )    
