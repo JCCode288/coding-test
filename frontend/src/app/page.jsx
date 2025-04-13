@@ -1,3 +1,4 @@
+import AddNewButton from "@/components/add-new-button";
 import PageHeader from "@/components/page-header";
 import RepsCard from "@/components/reps-card";
 import { Button } from "@/components/ui/button";
@@ -10,14 +11,12 @@ export default async function HomePage({}) {
    return (
       <>
          <PageHeader name="Representatives">
-            <Link href="/reps/new">
-               <Button variant="outline" className="border-slate-300">
-                  Add New Representative
-               </Button>
+            <Link href="/new/reps">
+               <AddNewButton>Add New Representative</AddNewButton>
             </Link>
          </PageHeader>
          <section className="m-8 flex-1">
-            <div className="grid grid-cols-2 gap-4 grid-flow-row">
+            <div className="sm:grid sm:grid-cols-2 xl:grid-cols-3 sm:grid-flow-row flex flex-col gap-4">
                {reps.map((rep) => (
                   <RepsCard key={rep.id} reps={rep} />
                ))}

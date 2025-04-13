@@ -2,8 +2,13 @@ import { getClientsById } from "@/lib/api";
 
 export default async function ClientDetail({ params }) {
    const { id } = await params;
+   if (isNaN(+id)) return null;
 
    const { data: client } = await getClientsById(id);
 
-   return <>Client Detail: {JSON.stringify(client)}</>;
+   return (
+      <section className="flex-1 m-8">
+         Client Detail: {JSON.stringify(client)}
+      </section>
+   );
 }
