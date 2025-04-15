@@ -1,10 +1,14 @@
 import AddNewButton from "@/components/add-new-button";
 import PageHeader from "@/components/page-header";
+import PagePagination from "@/components/page-pagination";
 import { getClients } from "@/lib/api";
 import Link from "next/link";
 
-export default async function ClientsPage() {
-   const { data: clients } = await getClients();
+export default async function ClientsPage({ searchParams }) {
+   const query = await searchParams;
+   const page = query?.page ?? 1;
+   const limit = query?.limit ?? 10;
+   const { data: clients, pagination } = await getClients(page, limit);
 
    return (
       <>
@@ -24,6 +28,8 @@ export default async function ClientsPage() {
                );
             })}
          </section>
+
+         <PagePagination baseUrl="/clients" {...pagination} />
       </>
    );
 }
