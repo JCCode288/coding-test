@@ -10,7 +10,7 @@ import {
    FormMessage,
 } from "./ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, PlusIcon } from "lucide-react";
 import {
    Command,
    CommandEmpty,
@@ -19,7 +19,7 @@ import {
    CommandList,
    CommandGroup,
 } from "./ui/command";
-import { getSkills } from "@/lib/api";
+import { addSkill, getSkills } from "@/lib/api";
 import ComboboxLoading from "./combobox-loading";
 import { Button } from "./ui/button";
 import { cn } from "@/utils/shadcn";
@@ -27,6 +27,7 @@ import { cn } from "@/utils/shadcn";
 export default function SkillCombobox({ form }) {
    const [skills, setSkills] = useState(() => []);
    const [loading, setLoading] = useState(() => false);
+   const [searchSkill, setSearchSkill] = useState(() => "");
 
    const fetchSkills = async () => {
       setLoading(() => true);
@@ -44,7 +45,21 @@ export default function SkillCombobox({ form }) {
       fetchSkills();
    }, []);
 
-   const addNewSkill = useCallback((skill) => {}, [skills]);
+   const addNewSkill = useCallback(async () => {
+      if (!searchSkill) return;
+      setLoading(() => true);
+      try {
+         const { data } = await addSkill(searchSkill);
+
+         setSkills((prev) => [...prev, data]);
+         setSearchSkill(() => "");
+         setLoading(() => false);
+      } catch (err) {
+         setLoading(() => false);
+         console.log("Failed to add skill");
+         console.error(err);
+      }
+   }, [searchSkill, form]);
 
    return (
       <FormField
@@ -52,7 +67,7 @@ export default function SkillCombobox({ form }) {
          name="skills"
          render={({ field }) => {
             if (loading) return <ComboboxLoading />;
-            console.log(field.value);
+
             return (
                <FormItem className="flex flex-col">
                   <FormLabel>Skills</FormLabel>
@@ -90,9 +105,21 @@ export default function SkillCombobox({ form }) {
                      </PopoverTrigger>
                      <PopoverContent className="w-full p-0">
                         <Command>
-                           <CommandInput placeholder="Search language..." />
+                           <CommandInput
+                              value={searchSkill}
+                              onValueChange={setSearchSkill}
+                              placeholder="Search Skill..."
+                           />
                            <CommandList>
-                              <CommandEmpty>No Skill found.</CommandEmpty>
+                              <CommandEmpty>
+                                 <Button
+                                    className="text-wrap break-all"
+                                    variant="ghost"
+                                    onClick={addNewSkill}
+                                 >
+                                    <PlusIcon /> {searchSkill} Skill
+                                 </Button>
+                              </CommandEmpty>
                               <CommandGroup>
                                  {skills.map((skill) => (
                                     <CommandItem
