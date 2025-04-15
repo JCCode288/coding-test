@@ -10,7 +10,7 @@ export function nextPageUrl(base, currentPage, totalPage) {
 
    return function limitUrl(limit) {
       if (isNaN(limit) || typeof limit !== "number")
-         return { url: `${url}&limit=15`, valid };
+         return { url: `${url}&limit=10`, valid };
 
       return { url: `${url}&limit=${limit}`, valid };
    };
@@ -28,7 +28,7 @@ export function prevPageUrl(base, currentPage, totalPage) {
 
    return function limitUrl(limit) {
       if (isNaN(limit) || typeof limit !== "number")
-         return { url: `${url}&limit=15`, valid };
+         return { url: `${url}&limit=10`, valid };
 
       return { url: `${url}&limit=${limit}`, valid };
    };

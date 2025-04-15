@@ -25,21 +25,6 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
--  [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
--  [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
 ## Running on Build
 
 First, run the build command:
@@ -54,11 +39,15 @@ then run command:
 yarn start
 ```
 
-## Architectural Decision
+# Architectural Decision
 
 App is builded based on `Radically Simple` approach. The idea is to keep app as simple as possible, limiting resources and make most of used resources
 
-### Redis
+## Explanation
+
+Nextjs App will serve as Frontend and Orchestrator/Middleware for BE Processing. Aim is to be scalable while maintaining robust functionality even if sacrificing performance as long as it was not really hindering the interactiveness of the app.
+
+## Redis
 
 App is cached using redis. Redis will be used for other purposes as well (included but not limited) to:
 
@@ -67,8 +56,16 @@ App is cached using redis. Redis will be used for other purposes as well (includ
 -  Response caching
 -  Chat history
 
-### Backend Connections
+## Backend Connections
 
 App using API library which itself a nextjs server action which became stable nowadays. It is a api route without much exposing the route and strictly used to connection with Backend API.
 
-Connection with backend also uses `Redis Pub/Sub` to overcome REST API limitation and giving `senses` of Realtime in some feature.
+Connection with backend also uses `Redis Pub/Sub` with `SSE` to overcome usual REST API limitation and giving `senses` of Realtime in some feature.
+
+## Job Processing
+
+Most Data Manipulation request will be handled by Queue. to simplify API Behaviour, response will be waiting job to finish using promise technique.
+
+However in big scale application this behaviour can be changed to just listing all the jobs in a page for better responsiveness.
+
+App also scalable when there's DB change (e.g: from sqlite to postgresql) just increase the concurency config in worker and app are good to go.

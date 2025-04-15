@@ -20,6 +20,8 @@ def init_db():
 
 def migrate():
   # Load dummy data
+  init_db()
+  
   with open("../" + "dummyData.json", "r") as f: # path perspective of main.py
       DUMMY_DATA = json.load(f)
   
