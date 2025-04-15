@@ -8,7 +8,6 @@ from dto.main_dto import AddClientDTO, AddDealDTO, AddRepsDTO, AddSkillDTO, Edit
 from dto.ai_dto import AIPromptDTO
 from typing import Annotated
 from utils.pagination import get_pagination
-import json
 
 api_router = APIRouter(prefix='/api')
 
@@ -76,7 +75,7 @@ async def add_rep(
     Add Sales Representative
     """
     
-    skills: list[Skills]
+    skills: list[Skills] = body.skills
         
     if len(body.skills):
         skills_stmt = (
