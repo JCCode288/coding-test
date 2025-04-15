@@ -53,7 +53,9 @@ export default function DealsTable({ deals }) {
                      </Link>
                   </TableCell>
                   <TableCell>
-                     <DealBadge status={dl?.status} />
+                     <Link href={"/deals/" + dl.id}>
+                        <DealBadge status={dl?.status} />
+                     </Link>
                   </TableCell>
                   <TableCell>
                      <DealsClient id={dl?.id}>{dl?.client}</DealsClient>

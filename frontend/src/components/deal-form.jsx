@@ -12,34 +12,53 @@ import {
    FormLabel,
    FormMessage,
 } from "./ui/form";
+import {
+   Select,
+   SelectContent,
+   SelectItem,
+   SelectTrigger,
+   SelectValue,
+} from "./ui/select";
 import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import SkillCombobox from "./skill-combobox";
+import { DealStatus } from "@/utils/constants/deal.status";
+import RepsCombobox from "./reps-combobox";
 
-const repsSchema = z.object({
-   name: z.string().nonempty("name cannot be empty").min(1).default(""),
-   region: z
+const dealSchema = z.object({
+   client: z
       .string()
-      .nonempty("region cannot be empty")
+      .nonempty("client cannot be empty")
       .min(1)
       .default(""),
-   role: z.string().nonempty("role cannot be empty").min(1).default(""),
-   skills: z.optional(z.array(z.number())).default([]),
+   value: z.number().min(1, "value cannot be empty").default(""),
+   status: z
+      .enum(Object.values(DealStatus), {
+         message: `wrong status. it can only be ${DealStatus.WON}, ${DealStatus.PROGRESS}, or ${DealStatus.LOSE}`,
+      })
+      .default(DealStatus.PROGRESS),
+   reps_id: z.number().nonnegative("invalid representative"),
 });
 
-export default function RepsForm({ submitFunc, reps }) {
+export default function DealForm({ submitFunc, deal, reps }) {
    const router = useRouter();
    const form = useForm({
-      resolver: zodResolver(repsSchema),
-      defaultValues: reps ?? getDefaults(repsSchema),
+      resolver: zodResolver(dealSchema),
+      defaultValues: deal ?? getDefaults(dealSchema),
    });
+
+   const handleValue = (e) => {
+      const value = +e.target?.value;
+      if (isNaN(value)) return;
+
+      return form.setValue("value", value);
+   };
 
    const handleSubmit = async (values) => {
       try {
          await submitFunc(values);
-         router.push("/");
+         router.push("/deals");
       } catch (err) {
          console.log("error when submitting", err);
       }
@@ -53,20 +72,23 @@ export default function RepsForm({ submitFunc, reps }) {
                onSubmit={form.handleSubmit(handleSubmit)}
             >
                <legend className="flex flex-1 justify-center  font-semibold text-xl">
-                  Add New Representative
+                  {deal ? "Edit Deal" : "Add New Deal"}
                </legend>
 
                <FormField
                   control={form.control}
-                  name="name"
+                  name="client"
                   render={({ field }) => (
                      <FormItem>
-                        <FormLabel>Representative Name</FormLabel>
+                        <FormLabel>Deal Client</FormLabel>
                         <FormControl>
-                           <Input placeholder="reps name" {...field} />
+                           <Input
+                              placeholder="Deal client name (e.g Acme Inc)"
+                              {...field}
+                           />
                         </FormControl>
                         <FormDescription>
-                           This is representative public display name.
+                           This is Deal Client name.
                         </FormDescription>
                         <FormMessage />
                      </FormItem>
@@ -74,15 +96,20 @@ export default function RepsForm({ submitFunc, reps }) {
                />
                <FormField
                   control={form.control}
-                  name="role"
+                  name="value"
                   render={({ field }) => (
                      <FormItem>
-                        <FormLabel>Representative Role</FormLabel>
+                        <FormLabel>Deal Value</FormLabel>
                         <FormControl>
-                           <Input placeholder="reps role" {...field} />
+                           <Input
+                              placeholder="Deal valuation (e.g 10000)"
+                              {...field}
+                              value={form.getValues().value}
+                              onChange={handleValue}
+                           />
                         </FormControl>
                         <FormDescription>
-                           This is representative role.
+                           This is Value of this Deal.
                         </FormDescription>
                         <FormMessage />
                      </FormItem>
@@ -90,21 +117,24 @@ export default function RepsForm({ submitFunc, reps }) {
                />
                <FormField
                   control={form.control}
-                  name="region"
+                  name="status"
                   render={({ field }) => (
                      <FormItem>
-                        <FormLabel>Representative Region</FormLabel>
+                        <FormLabel>Deal Status</FormLabel>
                         <FormControl>
-                           <Input placeholder="reps region" {...field} />
+                           <Input
+                              placeholder='Current deal status (e.g "In Progress")'
+                              {...field}
+                           />
                         </FormControl>
                         <FormDescription>
-                           This is representative region.
+                           This is current deal status.
                         </FormDescription>
                         <FormMessage />
                      </FormItem>
                   )}
                />
-               <SkillCombobox form={form} />
+               <RepsCombobox form={form} />
 
                <Button type="submit" variant="outline">
                   Submit
