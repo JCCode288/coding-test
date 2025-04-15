@@ -9,7 +9,7 @@ context = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    migrate() # uncomment to migrate initial data
+    # migrate() # uncomment to migrate initial data
     
     yield 
     

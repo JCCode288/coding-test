@@ -12,10 +12,21 @@ import {
    FormLabel,
    FormMessage,
 } from "./ui/form";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import {
+   Command,
+   CommandEmpty,
+   CommandInput,
+   CommandItem,
+   CommandList,
+   CommandGroup,
+} from "./ui/command";
 import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import SkillCombobox from "./skill-combobox";
 
 const repsSchema = z.object({
    name: z.string().nonempty("name cannot be empty").min(1).default(""),
@@ -103,22 +114,7 @@ export default function RepsForm({ submitFunc, reps }) {
                      </FormItem>
                   )}
                />
-               <FormField
-                  control={form.control}
-                  name="skills"
-                  render={({ field }) => (
-                     <FormItem>
-                        <FormLabel>Representative Skills</FormLabel>
-                        <FormControl>
-                           <Input placeholder="reps skill" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                           This is representative public display name.
-                        </FormDescription>
-                        <FormMessage />
-                     </FormItem>
-                  )}
-               />
+               <SkillCombobox form={form} />
 
                <Button type="submit" variant="outline">
                   Submit
