@@ -53,3 +53,22 @@ then run command:
 ```bash
 yarn start
 ```
+
+## Architectural Decision
+
+App is builded based on `Radically Simple` approach. The idea is to keep app as simple as possible, limiting resources and make most of used resources
+
+### Redis
+
+App is cached using redis. Redis will be used for other purposes as well (included but not limited) to:
+
+-  Saving app jobs
+-  Chat feature
+-  Response caching
+-  Chat history
+
+### Backend Connections
+
+App using API library which itself a nextjs server action which became stable nowadays. It is a api route without much exposing the route and strictly used to connection with Backend API.
+
+Connection with backend also uses `Redis Pub/Sub` to overcome REST API limitation and giving `senses` of Realtime in some feature.
