@@ -1,8 +1,19 @@
+import RepsForm from "@/components/reps-form";
 import { getRepsById } from "@/lib/api";
 
 export default async function EditPage({ params }) {
    const { id } = await params;
    const { data: rep } = await getRepsById(id);
 
-   return <div className="flex-1">Edit Rep: {JSON.stringify(rep)}</div>;
+   const handleEdit = (values) => {
+      // handle form body here
+   };
+
+   return (
+      <section className="flex flex-1 m-8 justify-center">
+         <Suspense fallback={<>Loading..</>}>
+            <RepsForm reps={rep} submitFunc={handleEdit} />
+         </Suspense>
+      </section>
+   );
 }

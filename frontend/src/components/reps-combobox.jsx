@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
    FormControl,
    FormDescription,
@@ -19,21 +19,45 @@ import {
    CommandList,
    CommandGroup,
 } from "./ui/command";
-import { addSkill, getSkills } from "@/lib/api";
+import { getSalesReps } from "@/lib/api";
 import { Button } from "./ui/button";
 import { cn } from "@/utils/shadcn";
+import Link from "next/link";
 
-export default function SkillCombobox({ form }) {
-   const [skills, setSkills] = useState(() => []);
+export default function RepsCombobox({ form }) {
+   const [reps, setReps] = useState(() => []);
    const [loading, setLoading] = useState(() => false);
-   const [searchSkill, setSearchSkill] = useState(() => "");
+   const [searchReps, setSearchReps] = useState(() => "");
+   const [page, setPage] = useState(() => 1);
+   const [totalPage, setTotalPage] = useState(() => 1);
+   const noNextPage = useMemo(
+      () => page + 1 > totalPage,
+      [page, totalPage]
+   );
 
-   const fetchSkills = async () => {
+   const fetchReps = async () => {
       setLoading(() => true);
       try {
-         const { data } = await getSkills();
+         const { data, pagination } = await getSalesReps(page, 1000); // mock only implement proper search later
 
-         setSkills(() => data);
+         setReps(() => data);
+         setTotalPage(() => pagination.total_page);
+         setLoading(() => false);
+      } catch (err) {
+         setLoading(() => false);
+      }
+   };
+
+   const handleNextPage = async () => {
+      if (noNextPage) return;
+
+      setLoading(() => true);
+      try {
+         const { data, pagination } = await getSalesReps(page + 1, 2);
+
+         setReps((prev) => [...prev, ...data]);
+         setPage(() => pagination.current_page);
+         setTotalPage(() => pagination.total_page);
          setLoading(() => false);
       } catch (err) {
          setLoading(() => false);
@@ -41,33 +65,17 @@ export default function SkillCombobox({ form }) {
    };
 
    useEffect(() => {
-      fetchSkills();
+      fetchReps();
    }, []);
-
-   const addNewSkill = useCallback(async () => {
-      if (!searchSkill) return;
-      setLoading(() => true);
-      try {
-         const { data } = await addSkill(searchSkill);
-
-         setSkills((prev) => [...prev, data]);
-         setSearchSkill(() => "");
-         setLoading(() => false);
-      } catch (err) {
-         setLoading(() => false);
-         console.log("Failed to add skill");
-         console.error(err);
-      }
-   }, [searchSkill, form]);
 
    return (
       <FormField
          control={form.control}
-         name="skills"
+         name="reps_id"
          render={({ field }) => {
             return (
                <FormItem className="flex flex-col">
-                  <FormLabel>Skills</FormLabel>
+                  <FormLabel>Sales Representatives</FormLabel>
                   <Popover>
                      <PopoverTrigger asChild>
                         <FormControl>
@@ -79,23 +87,10 @@ export default function SkillCombobox({ form }) {
                                  !field.value && "text-muted-foreground"
                               )}
                            >
-                              {field.value?.length
-                                 ? skills
-                                      .reduce((prev, curr) => {
-                                         if (prev.length > 3) return prev;
-
-                                         if (prev.length === 3) {
-                                            prev.push("...");
-                                            return prev;
-                                         }
-
-                                         if (field.value.includes(curr.id))
-                                            prev.push(curr.name);
-
-                                         return prev;
-                                      }, [])
-                                      .join(", ")
-                                 : "Select skill"}
+                              {field.value
+                                 ? reps.find((el) => el.id === field.value)
+                                      .name
+                                 : "Select Representative"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                            </Button>
                         </FormControl>
@@ -103,54 +98,65 @@ export default function SkillCombobox({ form }) {
                      <PopoverContent className="w-full p-0">
                         <Command>
                            <CommandInput
-                              value={searchSkill}
-                              onValueChange={setSearchSkill}
-                              placeholder="Search Skill..."
+                              value={searchReps}
+                              onValueChange={setSearchReps}
+                              placeholder="Search Representative..."
                            />
                            <CommandList>
                               {loading && (
                                  <CommandGroup>
                                     <CommandItem>
-                                       Loading Skill
+                                       Loading Representative
                                     </CommandItem>
                                  </CommandGroup>
                               )}
                               {!loading && (
                                  <>
                                     <CommandEmpty>
-                                       <Button
-                                          className="text-wrap break-all"
-                                          variant="ghost"
-                                          onClick={addNewSkill}
-                                       >
-                                          <PlusIcon /> {searchSkill} Skill
-                                       </Button>
+                                       <Link href="/new/reps">
+                                          <Button
+                                             className="text-wrap break-all"
+                                             variant="ghost"
+                                          >
+                                             <PlusIcon /> {searchReps}{" "}
+                                             Representative
+                                          </Button>
+                                       </Link>
                                     </CommandEmpty>
                                     <CommandGroup>
-                                       {skills.map((skill) => (
+                                       {reps.map((rep) => (
                                           <CommandItem
-                                             value={skill.id}
-                                             key={skill.id}
+                                             value={rep.id}
+                                             key={rep.id}
                                              onSelect={() => {
-                                                form.setValue("skills", [
-                                                   ...field.value,
-                                                   skill.id,
-                                                ]);
+                                                console.log(rep.id);
+                                                form.setValue(
+                                                   "reps_id",
+                                                   rep.id
+                                                );
                                              }}
                                           >
-                                             {skill.name}
+                                             {rep.name}
                                              <Check
                                                 className={cn(
                                                    "ml-auto",
-                                                   field.value?.includes(
-                                                      skill.id
-                                                   )
+                                                   field.value === rep.id
                                                       ? "opacity-100"
                                                       : "opacity-0"
                                                 )}
                                              />
                                           </CommandItem>
                                        ))}
+                                       <CommandItem>
+                                          <Button
+                                             className="w-full"
+                                             variant="outline"
+                                             onClick={handleNextPage}
+                                             disabled={noNextPage}
+                                          >
+                                             More
+                                          </Button>
+                                       </CommandItem>
                                     </CommandGroup>
                                  </>
                               )}
@@ -159,7 +165,7 @@ export default function SkillCombobox({ form }) {
                      </PopoverContent>
                   </Popover>
                   <FormDescription>
-                     All Available Representatives skill.
+                     All Available Representatives.
                   </FormDescription>
                   <FormMessage />
                </FormItem>
