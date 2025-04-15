@@ -7,6 +7,7 @@ import {
 
 import { cn } from "@/utils/shadcn";
 import { buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
 
 function Pagination({ className, ...props }) {
    return (
@@ -34,19 +35,23 @@ function PaginationItem({ ...props }) {
    return <li data-slot="pagination-item" {...props} />;
 }
 
-function PaginationLink({ className, isActive, size = "icon", ...props }) {
+function PaginationLink({
+   className,
+   isActive,
+   size = "icon",
+   disabled = false,
+   ...props
+}) {
+   const buttonVariant = { size, variant: "ghost" };
+   if (disabled) buttonVariant.variant = "disabled";
+   if (isActive) buttonVariant.variant = "outline";
+
    return (
-      <a
+      <Link
          aria-current={isActive ? "page" : undefined}
          data-slot="pagination-link"
          data-active={isActive}
-         className={cn(
-            buttonVariants({
-               variant: isActive ? "outline" : "ghost",
-               size,
-            }),
-            className
-         )}
+         className={cn(buttonVariants(buttonVariant))}
          {...props}
       />
    );

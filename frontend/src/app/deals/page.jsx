@@ -1,11 +1,16 @@
 import AddNewButton from "@/components/add-new-button";
 import DealsTable from "@/components/deals-table";
 import PageHeader from "@/components/page-header";
+import PagePagination from "@/components/page-pagination";
 import { getDeals } from "@/lib/api";
 import Link from "next/link";
 
-export default async function DealsPage() {
-   const { data: deals } = await getDeals();
+export default async function DealsPage({ searchParams }) {
+   const query = await searchParams;
+   const page = query?.page ?? 1;
+   const limit = query?.limit ?? 10;
+
+   const { data: deals, pagination } = await getDeals(page, limit);
 
    return (
       <>
@@ -18,6 +23,8 @@ export default async function DealsPage() {
          <section className="m-8 flex-1">
             <DealsTable deals={deals} />
          </section>
+
+         <PagePagination baseUrl="/deals" {...pagination} />
       </>
    );
 }
