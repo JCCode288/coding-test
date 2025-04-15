@@ -15,7 +15,6 @@ import {
 import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
 import { Button } from "./ui/button";
-import { addSalesReps } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 const repsSchema = z.object({
@@ -29,7 +28,7 @@ const repsSchema = z.object({
    skills: z.optional(z.array(z.number())).default([]),
 });
 
-export default function RepsForm({ reps }) {
+export default function RepsForm({ submitFunc, reps }) {
    const router = useRouter();
    const form = useForm({
       resolver: zodResolver(repsSchema),
@@ -38,7 +37,7 @@ export default function RepsForm({ reps }) {
 
    const handleSubmit = async (values) => {
       try {
-         await addSalesReps(values);
+         await submitFunc(values);
          router.push("/");
       } catch (err) {
          console.log("error when submitting", err);
