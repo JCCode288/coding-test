@@ -20,7 +20,6 @@ export default async function ClientsPage({ searchParams }) {
 
          <section className="m-8 flex-1">
             {clients.map((cl) => {
-               console.log(cl);
                return (
                   <div key={cl.id}>
                      {cl.name} - {cl.reps.name}
