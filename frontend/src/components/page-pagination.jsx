@@ -17,7 +17,7 @@ export default function PagePagination({
    current_page,
 }) {
    const searchParams = useSearchParams();
-   const limit = searchParams.get("limit") ?? 15;
+   const limit = searchParams.get("limit") ?? 10;
 
    const prevPage = useMemo(
       () => prevPageUrl(baseUrl, current_page, total_page)(+limit),
