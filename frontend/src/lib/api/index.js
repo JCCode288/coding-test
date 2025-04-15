@@ -96,11 +96,11 @@ export async function addClients(clientData) {
       throw err;
    }
 }
-export async function getDeals() {
+export async function getDeals(page = 1, limit = 10) {
    try {
       const query = new URLSearchParams();
-      query.append("limit", 15);
-      query.append("page", 1);
+      query.append("limit", limit);
+      query.append("page", page);
 
       const url = `${BE_Routes.DEALS}?${query.toString()}`;
       const { data } = await Axios.get(url);
