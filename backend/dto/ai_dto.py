@@ -1,38 +1,49 @@
 from pydantic import BaseModel, Field
 from typing import TypedDict, Optional, Any
-from datetime import datetime
-
 
 class AIPromptDTO(BaseModel):
   user_id: str = Field()
   prompt: str = Field()
 
 
-class VectorDoc(TypedDict):
-  text: str
+class VectorMetadata(TypedDict):
   industry: Optional[str] = None
   reps_name: Optional[str] = None
   reps_region: Optional[str] = None
   vector: Any
-  created_at: int 
-  
-  
-  @classmethod
-  def build(
-    cls,
-    text:str,
-    industry = None,
-    reps_name = None,
-    reps_region = None,
-    vector = None,
-    created_at = int(datetime.now().strftime("%s"))
-  ):
-    print(text)
-    return VectorDoc(
-      text=text,
-      industry=industry,
-      reps_name=reps_name,
-      reps_region=reps_region,
-      vector=vector,
-      created_at=created_at
-    )
+
+# metadata_schema = MilvusClient.create_schema()
+
+# metadata_schema.add_field(
+#   field_name="id",
+#   datatype=DataType.INT64,
+#   auto_id=True,
+#   is_primary=True
+# )
+
+# metadata_schema.add_field(
+#   field_name="vector",
+#   datatype=DataType.FLOAT_VECTOR,
+#   dim=768
+# )
+
+# metadata_schema.add_field(
+#   field_name="reps_name",
+#   datatype=DataType.VARCHAR,
+#   max_length=512,
+#   nullable=True
+# )
+
+# metadata_schema.add_field(
+#   field_name="reps_region",
+#   datatype=DataType.VARCHAR,
+#   max_length=512,
+#   nullable=True
+# )
+
+# metadata_schema.add_field(
+#   field_name="industry",
+#   datatype=DataType.VARCHAR,
+#   max_length=512,
+#   nullable=True
+# )

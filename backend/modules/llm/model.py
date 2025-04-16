@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from langchain_groq import ChatGroq
 from langchain.globals import set_llm_cache, set_verbose
-from langchain.cache import SQLAlchemyCache
+from langchain_community.cache import SQLAlchemyCache
 from modules.database.db import init_llm_db
 import os
 
@@ -20,6 +20,8 @@ def get_model(
 ):
   API_KEY = os.environ.get("LLM_API_KEY")
   
+  kwargs['top_p'] = top_p
+  
   return ChatGroq(
     api_key=API_KEY,
     temperature=temp,
@@ -27,6 +29,5 @@ def get_model(
     max_tokens=max_tokens,
     model=model_name,
     callbacks=callbacks,
-    top_p=top_p,
     **kwargs
   )
