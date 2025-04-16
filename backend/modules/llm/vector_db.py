@@ -1,26 +1,40 @@
 from dotenv import load_dotenv
 load_dotenv()
 import os
-from pymilvus import MilvusClient, model
+from pymilvus import model
+from langchain_milvus import Milvus
+from langchain_huggingface import HuggingFaceEmbeddings
 
 VECTOR_DB_PATH = os.environ.get("VECTOR_DB_PATH")
 MAIN_COLLECTION = os.environ.get("VECTOR_COLL_NAME")
 COLLECTION_AUTOID = os.environ.get('VECTOR_AUTOID')
 
-embedding = model.DefaultEmbeddingFunction()
+embedding = HuggingFaceEmbeddings(
+  model_name="jinaai/jina-embeddings-v3",
+  model_kwargs={
+    "device": "cpu",
+    "trust_remote_code": True
+  }
+)
 
-def get_vector_db() -> MilvusClient:
-  client = MilvusClient(VECTOR_DB_PATH)
+def get_vector_db() -> Milvus:
+  # client = MilvusClient(VECTOR_DB_PATH)
+  client = Milvus(
+    embedding_function=embedding,
+    collection_name=MAIN_COLLECTION,
+    connection_args={
+      "uri": VECTOR_DB_PATH,
+    },
+    primary_field="id",
+    index_params={"index_type": "IVF_FLAT"},
+    enable_dynamic_field=True,
+    auto_id=True if COLLECTION_AUTOID else False
+  )
+  
   return client
 
 def init_vector():
   client = get_vector_db()
-  if not client.has_collection(MAIN_COLLECTION):
-    client.create_collection(
-      MAIN_COLLECTION, 
-      dimension=embedding.dim, 
-      auto_id=True if COLLECTION_AUTOID else False
-    ) # 768 is default embedding function embedding shape
   
   return client
 
@@ -33,31 +47,18 @@ def insert_docs(docs: list[dict]):
   print("=== Insert Vector Documents ===")
   
   client = get_vector_db()
-  embedding = get_embedding()
   
-  vectors = embedding.encode_documents([doc["text"] for doc in docs])
-  embed_docs = []
+  # uuids = [str(uuid4()) for _ in range(len(docs))]
   
-  for i in range(len(vectors)):
-    doc = docs[i]
-    doc['vector'] = vectors[i]
-    embed_docs.append(doc)
-  
-  return client.insert(MAIN_COLLECTION, embed_docs)
+  return client.add_documents(docs)
 
-def query_docs(query: str | list[str], filter=None, limit=5):
+def query_docs(query: str, filter=None, limit=5):
   client = get_vector_db()
-  embedding = get_embedding()
-  query: list[str] = [query] if type(query) == str else query
   
-  vector_q = embedding.encode_queries(query)
+  return client.similarity_search_with_score(
+    query=query,
+    k=limit,
+    expr=filter
+  )
   
-  ## Default Metric type is Cosine
-  return client.search( 
-    collection_name=MAIN_COLLECTION,
-    data=vector_q,
-    anns_field="vector",
-    filter=filter,
-    limit=limit,
-    output_fields=['text', "created_at", "reps_name"],
-  )[0]
+  

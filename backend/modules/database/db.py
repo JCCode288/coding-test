@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from .models import Base, SalesReps, Deals, Clients, Skills
 from .llm_models import LLMBase
 from modules.llm.vector_db import insert_docs
-from dto.ai_dto import VectorDoc
+from dto.ai_dto import VectorMetadata
+from langchain_core.documents import Document
 import json
 import os
 
@@ -92,10 +93,12 @@ def migrate():
       
       datas = [skill_str, deals_str, client_str, *deals_docs]
       datas = [
-        VectorDoc.build(
-          text, 
-          reps_name= reps.name, 
-          reps_region= reps.region,
+        Document(
+          page_content=text,
+          metadata=VectorMetadata(
+            reps_name= reps.name, 
+            reps_region= reps.region,
+          )
         )
         for text in datas
       ]
@@ -107,10 +110,12 @@ def migrate():
     for key, value in industries.items():
       industry_str = f"{key} industry clients are {", ".join(client.name for client in value)}"
       
-      data = VectorDoc.build(
-        text= industry_str,
-        industry= key,
-      )
+      data = Document(
+        page_content=industry_str,
+        metadata=VectorMetadata(
+            industry= key,
+          )
+        )
       
       docs.append(data)
     

@@ -6,11 +6,12 @@ from sqlalchemy import select, insert, update, delete, desc
 from sqlalchemy.orm import Session, joinedload
 from dto.options_dto import QueryParam
 from dto.main_dto import AddClientDTO, AddDealDTO, AddRepsDTO, AddSkillDTO, EditDealDTO
-from dto.ai_dto import AIPromptDTO, VectorDoc
+from dto.ai_dto import AIPromptDTO, VectorMetadata
 from typing import Annotated
 from utils.pagination import get_pagination
 from modules.llm.vector_db import query_docs, insert_docs
 from modules.llm.model import get_model
+from langchain_core.documents import Document
 import json
 
 api_router = APIRouter(prefix='/api')
@@ -100,10 +101,12 @@ async def add_rep(
     
     if len(skills):
         docs = [
-            VectorDoc.build(
-                text=f"New Representative {reps.name} in Region {reps.region} and role as {reps.role} has skills as {", ".join(skill.name for skill in skills)}",
-                reps_name=reps.name,
-                reps_region=reps.region
+            Document(
+                page_content=f"New Representative {reps.name} in Region {reps.region} and role as {reps.role} has skills as {", ".join(skill.name for skill in skills)}",
+                metadata=VectorMetadata(
+                    reps_name=reps.name,
+                    reps_region=reps.region
+                )
             )
         ]
         insert_docs(docs)
@@ -274,10 +277,12 @@ async def add_deal(body: AddDealDTO, db: Session = Depends(get_db)):
     db.commit()
     
     docs = [
-        VectorDoc.build(
-            text=f"Representative: {reps.name}, Role: {reps.role}, Region: {reps.region} has deal with {body.client} for value of {body.value} with status of {body.status}",
-            reps_name=reps.name,
-            reps_region=reps.region,
+        Document(
+            page_content=f"Representative: {reps.name}, Role: {reps.role}, Region: {reps.region} has deal with {body.client} for value of {body.value} with status of {body.status}",
+            metadata=VectorMetadata(
+                reps_name=reps.name,
+                reps_region=reps.region,
+            )
         )
     ]
     insert_docs(docs)
@@ -332,11 +337,14 @@ async def update_deal(id: int, body: EditDealDTO, db: Session = Depends(get_db))
     db.commit()
     
     docs = [
-    VectorDoc.build(
-        text=f"Deal with {deal.client} updated to have value of {deal.value} and status of {deal.status} assigned to {reps.name}",
-        reps_name=reps.name,
-        reps_region=reps.region
-    )]
+        Document(
+            page_content=f"Deal with {deal.client} updated to have value of {deal.value} and status of {deal.status} assigned to {reps.name}",
+            metadata=VectorMetadata(
+                reps_name=reps.name,
+                reps_region=reps.region
+            )
+        )
+   ]
     insert_docs(docs)
     
     return {"data": updated_deal}
@@ -444,8 +452,9 @@ async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
     # Replace with real AI logic as desired (e.g., call to an LLM).
     data = {"answer": f"This is a placeholder answer to your question: {body.prompt}"}
     
-    docs = query_docs([body.prompt])
-    ctx = [('system', doc['entity']['text']) for doc in docs]
+    docs = query_docs(body.prompt)
+    print(docs)
+    ctx = [('system', doc.page_content) for doc, score in docs]
     ctx.append(('human', body.prompt))
     
     return await llm.ainvoke(
