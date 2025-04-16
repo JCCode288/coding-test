@@ -1,14 +1,16 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi.responses import StreamingResponse
 from context import get_db
 from modules.database.models import SalesReps, Skills, Clients, Deals
 from sqlalchemy import select, insert, update, delete, desc
 from sqlalchemy.orm import Session, joinedload
 from dto.options_dto import QueryParam
 from dto.main_dto import AddClientDTO, AddDealDTO, AddRepsDTO, AddSkillDTO, EditDealDTO
-from dto.ai_dto import AIPromptDTO
+from dto.ai_dto import AIPromptDTO, VectorDoc
 from typing import Annotated
 from utils.pagination import get_pagination
-from modules.llm.vector_db import query_docs
+from modules.llm.vector_db import query_docs, insert_docs
+import json
 
 api_router = APIRouter(prefix='/api')
 
@@ -95,6 +97,16 @@ async def add_rep(
     db.add(reps)
     db.commit()
     
+    if len(skills):
+        docs = [
+            VectorDoc.build(
+                text=f"New Representative {reps.name} in Region {reps.region} and role as {reps.role} has skills as {", ".join(skill.name for skill in skills)}",
+                reps_name=reps.name,
+                reps_region=reps.region
+            )
+        ]
+        insert_docs(docs)
+        
     return {"data": body}
 
 @api_router.get('/clients', status_code=200)
@@ -237,19 +249,37 @@ async def add_deal(body: AddDealDTO, db: Session = Depends(get_db)):
     """
     Add new deal
     """
+    reps_stmt = (
+        select(SalesReps)
+        .where(SalesReps.id == body.reps_id)
+    )
+    reps = db.scalars(reps_stmt).unique().one()
+    
+    if not reps:
+        raise HTTPException(400, "invalid payload")
+    
     stmt = (
         insert(Deals)
         .values(
             value=body.value,
             client=body.client,
             status=body.status,
-            reps_id=body.reps_id
+            reps_id=reps.id
         )
         .returning(Deals.id)
     )
     
     inserted = db.execute(stmt).mappings().one()
     db.commit()
+    
+    docs = [
+        VectorDoc.build(
+            text=f"Representative: {reps.name}, Role: {reps.role}, Region: {reps.region} has deal with {body.client} for value of {body.value} with status of {body.status}",
+            reps_name=reps.name,
+            reps_region=reps.region,
+        )
+    ]
+    insert_docs(docs)
     
     return {"data": inserted}
 
@@ -263,14 +293,27 @@ async def update_deal(id: int, body: EditDealDTO, db: Session = Depends(get_db))
         select(Deals)
         .where(Deals.id == id)
     )
-    deal = db.scalars(deal_stmt).unique().one()
+    deal = db.scalars(deal_stmt).unique().one() ## should throw error if not found
+    
+    reps_id = body.reps_id or deal.reps_id
+    
+    reps_stmt = (
+        select(SalesReps)
+        .where(SalesReps.id == reps_id)
+    )
+    reps = db.scalars(reps_stmt).unique().one() ## should throw error if not found
+    
+    if not deal or not reps:
+        raise HTTPException(400, "invalid payload")
     
     if body.value:
         deal.value = body.value
     if body.client:
         deal.client = body.client
+    if body.status:
+        deal.status = body.status
     if body.reps_id:
-        deal.reps_id = body.reps_id
+        deal.reps_id = reps.id
     
     update_stmt = (
         update(Deals)
@@ -286,6 +329,14 @@ async def update_deal(id: int, body: EditDealDTO, db: Session = Depends(get_db))
     
     updated_deal = db.execute(update_stmt).mappings().one()
     db.commit()
+    
+    docs = [
+    VectorDoc.build(
+        text=f"Deal with {deal.client} updated to have value of {deal.value} and status of {deal.status} assigned to {reps.name}",
+        reps_name=reps.name,
+        reps_region=reps.region
+    )]
+    insert_docs(docs)
     
     return {"data": updated_deal}
     
@@ -373,6 +424,10 @@ async def add_skill(body: AddSkillDTO, db: Session = Depends(get_db)):
     
     return {"data": data}    
 
+async def stream_data(data):
+    for char in json.dumps(data):
+        yield char
+
 @api_router.post("/ai", status_code=201)
 async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
     """
@@ -386,4 +441,4 @@ async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
     # Replace with real AI logic as desired (e.g., call to an LLM).
     data = {"answer": f"This is a placeholder answer to your question: {body.prompt}"}
     
-    return {"data": query_docs(body.prompt) }
+    return query_docs([body.prompt])

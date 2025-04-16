@@ -52,10 +52,12 @@ def query_docs(query: str | list[str], filter=None, limit=5):
   
   vector_q = embedding.encode_queries(query)
   
-  return client.search(
+  ## Default Metric type is Cosine
+  return client.search( 
     collection_name=MAIN_COLLECTION,
     data=vector_q,
+    anns_field="vector",
     filter=filter,
     limit=limit,
-    output_fields=['text']
-  )
+    output_fields=['text', "created_at", "reps_name"],
+  )[0]

@@ -8,6 +8,8 @@ Installation for python packages can be done by running bash script `install.sh`
 
 > Script is optimized for ubuntu. make sure path to venv is correct (default: `./.venv/bin/activate` for ubuntu).
 
+Notes: Sometimes the app wont load perfectly for the first time because of vector and embedding modules being installed. please retry it or adjust it to your environtment
+
 ### Running apps
 
 initialize source from venv by running following script:
