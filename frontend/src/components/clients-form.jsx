@@ -12,55 +12,32 @@ import {
    FormLabel,
    FormMessage,
 } from "./ui/form";
-import {
-   Select,
-   SelectContent,
-   SelectItem,
-   SelectTrigger,
-   SelectValue,
-} from "./ui/select";
 import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import { DealStatus } from "@/utils/constants/deal.status";
 import RepsCombobox from "./reps-combobox";
 
-const dealSchema = z.object({
-   client: z
-      .string()
-      .nonempty("client cannot be empty")
-      .min(1)
-      .default(""),
-   value: z.number().min(1, "value cannot be empty").default(""),
-   status: z
-      .enum(Object.values(DealStatus), {
-         message: `wrong status. it can only be ${DealStatus.WON}, ${DealStatus.PROGRESS}, or ${DealStatus.LOSE}`,
-      })
-      .default(DealStatus.PROGRESS),
+const clientSchema = z.object({
+   name: z.string().nonempty("name cannot be empty").min(1).default(""),
+   contact: z.string().nonempty("contact cannot be empty").default(""),
+   industry: z.string().nonempty("industry cannot be empty").default(""),
    reps_id: z.number().nonnegative("invalid representative"),
 });
 
-export default function DealForm({ submitFunc, deal, reps }) {
+export default function ClientsForm({ client, submitFunc }) {
    const router = useRouter();
    const form = useForm({
-      resolver: zodResolver(dealSchema),
-      defaultValues: deal ?? getDefaults(dealSchema),
+      resolver: zodResolver(clientSchema),
+      defaultValues: client ?? getDefaults(clientSchema),
    });
-
-   const handleValue = (e) => {
-      const value = +e.target?.value;
-      if (isNaN(value)) return;
-
-      return form.setValue("value", value);
-   };
 
    const handleSubmit = async (values) => {
       try {
-         if (deal) await submitFunc(deal.id, values);
+         if (client) await submitFunc(client.id, values);
          else await submitFunc(values);
 
-         router.push("/deals");
+         router.push("/clients");
       } catch (err) {
          console.log("error when submitting", err);
       }
@@ -74,23 +51,23 @@ export default function DealForm({ submitFunc, deal, reps }) {
                onSubmit={form.handleSubmit(handleSubmit)}
             >
                <legend className="flex flex-1 justify-center  font-semibold text-xl">
-                  {deal ? "Edit Deal" : "Add New Deal"}
+                  {client ? "Edit Client Data" : "Add New Client"}
                </legend>
 
                <FormField
                   control={form.control}
-                  name="client"
+                  name="name"
                   render={({ field }) => (
                      <FormItem>
-                        <FormLabel>Deal Client</FormLabel>
+                        <FormLabel>Client Name</FormLabel>
                         <FormControl>
                            <Input
-                              placeholder="Deal client name (e.g Acme Inc)"
+                              placeholder="Client name (e.g Acme Inc)"
                               {...field}
                            />
                         </FormControl>
                         <FormDescription>
-                           This is Deal Client name.
+                           This is Client name.
                         </FormDescription>
                         <FormMessage />
                      </FormItem>
@@ -98,20 +75,18 @@ export default function DealForm({ submitFunc, deal, reps }) {
                />
                <FormField
                   control={form.control}
-                  name="value"
+                  name="industry"
                   render={({ field }) => (
                      <FormItem>
-                        <FormLabel>Deal Value</FormLabel>
+                        <FormLabel>Client Industry</FormLabel>
                         <FormControl>
                            <Input
-                              placeholder="Deal valuation (e.g 10000)"
+                              placeholder="Client Industry (e.g Fishery)"
                               {...field}
-                              value={form.getValues().value}
-                              onChange={handleValue}
                            />
                         </FormControl>
                         <FormDescription>
-                           This is Value of this Deal.
+                           This is Respective Client Industry.
                         </FormDescription>
                         <FormMessage />
                      </FormItem>
@@ -119,35 +94,26 @@ export default function DealForm({ submitFunc, deal, reps }) {
                />
                <FormField
                   control={form.control}
-                  name="status"
+                  name="contact"
                   render={({ field }) => (
                      <FormItem>
-                        <FormLabel>Deal Status</FormLabel>
-                        <Select
-                           onValueChange={field.onChange}
-                           defaultValue={field.value}
-                        >
-                           <FormControl>
-                              <SelectTrigger>
-                                 <SelectValue
-                                    placeholder='Current deal status (e.g "In Progress")'
-                                    {...field}
-                                 />
-                              </SelectTrigger>
-                           </FormControl>
-                           <SelectContent className="flex w-full">
-                              {Object.values(DealStatus).map((st) => (
-                                 <SelectItem value={st}>{st}</SelectItem>
-                              ))}
-                           </SelectContent>
-                        </Select>
+                        <FormLabel>Client Contact</FormLabel>
+
+                        <FormControl>
+                           <Input
+                              placeholder="Client Contact Email (e.g john@acme.co.id)"
+                              {...field}
+                           />
+                        </FormControl>
+
                         <FormDescription>
-                           This is current deal status.
+                           This is Respective Client Contact Email.
                         </FormDescription>
                         <FormMessage />
                      </FormItem>
                   )}
                />
+
                <RepsCombobox form={form} />
 
                <Button type="submit" variant="outline">

@@ -89,7 +89,7 @@ export default function RepsCombobox({ form }) {
                            >
                               {field.value
                                  ? reps.find((el) => el.id === field.value)
-                                      .name
+                                      ?.name
                                  : "Select Representative"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                            </Button>

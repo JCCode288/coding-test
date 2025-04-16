@@ -123,6 +123,7 @@ export async function addClients(clientData) {
          data,
          MAIN_QUEUE_CONF
       );
+      await cache.delete(BE_Routes.CLIENTS);
 
       // Using this trick to wait the response to simplify API Behaviour
       return jobData.waitUntilFinished(MainEventListener, 15000);
@@ -183,8 +184,10 @@ export async function addDeals(dealData) {
          MAIN_QUEUE_CONF
       );
 
+      await cache.delete(BE_Routes.DEALS);
+
       // Using this trick to wait the response to simplify API Behaviour
-      return jobData.waitUntilFinished(MainEventListener, 15000)
+      return jobData.waitUntilFinished(MainEventListener, 15000);
    } catch (err) {
       console.log("=== Add Deals Error ===");
       console.log(err);
@@ -204,9 +207,10 @@ export async function editDeals(id, dealData) {
          data,
          MAIN_QUEUE_CONF
       );
+      await cache.delete(BE_Routes.DEALS);
 
       // Using this trick to wait the response to simplify API Behaviour
-      return jobData.waitUntilFinished(MainEventListener, 15000)
+      return jobData.waitUntilFinished(MainEventListener, 15000);
    } catch (err) {
       console.log("=== Edit Deals Error ===");
       console.log(err);
@@ -226,9 +230,10 @@ export async function deleteDeals(id) {
          data,
          MAIN_QUEUE_CONF
       );
+      await cache.delete(BE_Routes.DEALS);
 
       // Using this trick to wait the response to simplify API Behaviour
-      return jobData.waitUntilFinished(MainEventListener, 15000)
+      return jobData.waitUntilFinished(MainEventListener, 15000);
    } catch (err) {
       console.log("=== Delete Deals Error ===");
       console.log(err);
@@ -280,8 +285,9 @@ export async function addSkill(name) {
          data,
          MAIN_QUEUE_CONF
       );
+      await cache.delete(BE_Routes.SKILLS);
 
-      return jobData.waitUntilFinished(MainEventListener, 15000)
+      return jobData.waitUntilFinished(MainEventListener, 15000);
    } catch (err) {
       console.log("=== Add Skill Error ===");
       console.log(err);

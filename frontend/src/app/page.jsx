@@ -21,7 +21,7 @@ export default async function HomePage({ searchParams }) {
          </PageHeader>
 
          <section className="m-8 flex-1">
-            <div className="sm:grid sm:grid-cols-2 xl:grid-cols-3 sm:grid-flow-row flex flex-col gap-4">
+            <div className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 sm:grid-flow-row gap-4">
                {reps.map((rep) => (
                   <RepsCard key={rep.id} reps={rep} />
                ))}

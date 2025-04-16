@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, Body
 from context import get_db
 from modules.database.models import SalesReps, Skills, Clients, Deals
 from sqlalchemy import select, insert, update, delete, desc
@@ -257,8 +257,6 @@ async def update_deal(id: int, body: EditDealDTO, db: Session = Depends(get_db))
     """
     Update deal based on deal id
     """
-    if body.id != id:
-        raise HTTPException(403, "not authorized")
     
     deal_stmt = (
         select(Deals)

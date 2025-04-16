@@ -23,9 +23,9 @@ class AddDealDTO(BaseModel):
   reps_id: int = Field()
   
 class EditDealDTO(BaseModel):
-  id: int = Field()
   value: Optional[int] = Field()
   client: Optional[str] = Field()
+  status: Optional[str] = Field()
   reps_id: Optional[int] = Field()
   
 class Pagination(BaseModel):
