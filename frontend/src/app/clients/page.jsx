@@ -1,4 +1,5 @@
 import AddNewButton from "@/components/add-new-button";
+import ClientsCard from "@/components/clients-card";
 import PageHeader from "@/components/page-header";
 import PagePagination from "@/components/page-pagination";
 import { getClients } from "@/lib/api";
@@ -18,13 +19,9 @@ export default async function ClientsPage({ searchParams }) {
             </Link>
          </PageHeader>
 
-         <section className="m-8 flex-1">
+         <section className="m-8 grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-1 flex-1">
             {clients.map((cl) => {
-               return (
-                  <div key={cl.id}>
-                     {cl.name} - {cl.reps.name}
-                  </div>
-               );
+               return <ClientsCard key={cl.id} client={cl} />;
             })}
          </section>
 
