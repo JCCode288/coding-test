@@ -20,7 +20,10 @@ def init_db():
   
   return engine
 
-def init_llm_db():
+def init_llm_db(): 
+  """
+  this DB mostly not used but will be used for LLM response caching
+  """
   LLMBase.metadata.create_all(llm_engine)
   
   return llm_engine
