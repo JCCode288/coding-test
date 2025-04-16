@@ -8,8 +8,6 @@ from context import lifespan
 import uvicorn
 import os
 
-
-
 app = FastAPI(
     docs_url="/docs", 
     lifespan=lifespan
