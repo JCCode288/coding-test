@@ -6,10 +6,6 @@ from langchain.cache import SQLAlchemyCache
 from modules.database.db import init_llm_db
 import os
 
-class CustomSQLiteCache(SQLAlchemyCache):
-  def __init__(self, engine):
-    super().__init__(engine)
-
 set_llm_cache(SQLAlchemyCache(init_llm_db()))
 set_verbose(True if os.environ.get("LLM_VERBOSE") else False)
 
