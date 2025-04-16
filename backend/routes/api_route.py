@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, Body
+from fastapi import APIRouter, Depends, Query, HTTPException
 from context import get_db
 from modules.database.models import SalesReps, Skills, Clients, Deals
 from sqlalchemy import select, insert, update, delete, desc
@@ -8,6 +8,7 @@ from dto.main_dto import AddClientDTO, AddDealDTO, AddRepsDTO, AddSkillDTO, Edit
 from dto.ai_dto import AIPromptDTO
 from typing import Annotated
 from utils.pagination import get_pagination
+from modules.llm.vector_db import query_docs
 
 api_router = APIRouter(prefix='/api')
 
@@ -385,4 +386,4 @@ async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
     # Replace with real AI logic as desired (e.g., call to an LLM).
     data = {"answer": f"This is a placeholder answer to your question: {body.prompt}"}
     
-    return {"data": data}
+    return {"data": query_docs(body.prompt) }
