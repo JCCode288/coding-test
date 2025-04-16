@@ -438,7 +438,7 @@ async def stream_data(data):
         yield char
 
 @api_router.post("/ai", status_code=201)
-async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
+async def ai_endpoint(body: AIPromptDTO, filter: str | None = None, db: Session = Depends(get_db)):
     """
     Accepts a user question and returns a placeholder AI response.
     (Optionally integrate a real AI model or external service here.)
@@ -452,7 +452,7 @@ async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
     # Replace with real AI logic as desired (e.g., call to an LLM).
     data = {"answer": f"This is a placeholder answer to your question: {body.prompt}"}
     
-    docs = query_docs(body.prompt)
+    docs = query_docs(body.prompt, filter=filter)
     print(docs)
     ctx = [('system', doc.page_content) for doc, score in docs]
     ctx.append(('human', body.prompt))
