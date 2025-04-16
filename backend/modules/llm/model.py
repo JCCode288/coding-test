@@ -20,7 +20,7 @@ def get_model(
 ):
   API_KEY = os.environ.get("LLM_API_KEY")
   
-  kwargs['top_p'] = top_p
+  kwargs["model_kwargs"] = {"top_p": top_p}
   
   return ChatGroq(
     api_key=API_KEY,
