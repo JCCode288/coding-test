@@ -27,5 +27,3 @@ async def get_llm_db():
   session = Session(db)
   
   yield session
-  
-  

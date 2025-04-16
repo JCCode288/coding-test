@@ -10,6 +10,7 @@ from dto.ai_dto import AIPromptDTO, VectorDoc
 from typing import Annotated
 from utils.pagination import get_pagination
 from modules.llm.vector_db import query_docs, insert_docs
+from modules.llm.model import get_model
 import json
 
 api_router = APIRouter(prefix='/api')
@@ -434,11 +435,19 @@ async def ai_endpoint(body: AIPromptDTO, db: Session = Depends(get_db)):
     Accepts a user question and returns a placeholder AI response.
     (Optionally integrate a real AI model or external service here.)
     """
-    
+    llm = get_model(
+        streaming=True,
+    )
     user = body.user_id
     
     # Placeholder logic: echo the question or generate a simple response
     # Replace with real AI logic as desired (e.g., call to an LLM).
     data = {"answer": f"This is a placeholder answer to your question: {body.prompt}"}
     
-    return query_docs([body.prompt])
+    docs = query_docs([body.prompt])
+    ctx = [('system', doc['entity']['text']) for doc in docs]
+    ctx.append(('human', body.prompt))
+    
+    return await llm.ainvoke(
+        ctx
+    )
