@@ -55,10 +55,6 @@ easier to separate app logic and debugging if it was divided per modules
 
    LLM Module for AI (LLM) related
 
--  **Use Cases**
-
-   implementation of provided modules combined into one use cases for each routes
-
 -  **Vector Store**
 
    Vector Store used in this app is Milvus, this stems for scalability concern. We can start small locally if needed we can move to better separate Milvus Server by self-deploying or using platform like ziliz
