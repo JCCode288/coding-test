@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
-from fastapi.responses import StreamingResponse
 from context import get_db
 from modules.database.models import SalesReps, Skills, Clients, Deals
 from sqlalchemy import select, insert, update, delete, desc
@@ -446,12 +445,7 @@ async def ai_endpoint(body: AIPromptDTO, filter: str | None = None, db: Session 
     llm = get_model(
         streaming=True,
     )
-    user = body.user_id
-    
-    # Placeholder logic: echo the question or generate a simple response
-    # Replace with real AI logic as desired (e.g., call to an LLM).
-    data = {"answer": f"This is a placeholder answer to your question: {body.prompt}"}
-    
+   
     docs = query_docs(body.prompt, filter=filter)
     print(docs)
     ctx = [('system', doc.page_content) for doc, score in docs]
