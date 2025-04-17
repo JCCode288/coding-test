@@ -1,4 +1,5 @@
 import Modal from "@/components/modal";
+import RepsDetailCard from "@/components/reps-detail";
 import { getRepsById } from "@/lib/api";
 
 export default async function RepsDetail({ params }) {
@@ -8,7 +9,7 @@ export default async function RepsDetail({ params }) {
 
    return (
       <Modal title="Representative Detail">
-         <p className="text-wrap">Reps detail {JSON.stringify(rep)}</p>
+         <RepsDetailCard reps={rep} />
       </Modal>
    );
 }

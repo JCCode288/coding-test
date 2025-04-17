@@ -11,9 +11,6 @@ export default async function DealDetailPage({ params }) {
    return (
       <section className="flex-1">
          Deal Detail: {JSON.stringify(deal)}
-         <Link href={"/deals/" + id + "/edit"}>
-            <Button>Edit</Button>
-         </Link>
       </section>
    );
 }
