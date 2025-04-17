@@ -4,6 +4,7 @@ from sqlalchemy import String, Text, DateTime, Table, Column, BigInteger
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from datetime import datetime
+from functools import reduce
 
 class Base(DeclarativeBase):
     created_at: Mapped[datetime] = mapped_column(
@@ -40,8 +41,22 @@ class SalesReps(Base):
     )
     clients: Mapped[List["Clients"]] = relationship(
         back_populates="reps",
-        
     )
+    
+    @property
+    def total_won(self) -> int | None:
+        if not self.deals: return None
+        
+        def add_won(prev: int, deal: Deals):
+            if deal.status != "Closed Won":
+                return prev
+            
+            prev += deal.value
+            return prev
+        
+        total = reduce(add_won, self.deals, 0)
+        return total
+            
     
 class Skills(Base):
     __tablename__ = "Skills"
@@ -57,7 +72,7 @@ class Skills(Base):
 class Deals(Base):
     __tablename__ = "Deals"
     id: Mapped[int] = mapped_column(primary_key=True)
-    value: Mapped[str] = mapped_column(BigInteger(), nullable=False)
+    value: Mapped[int] = mapped_column(BigInteger(), nullable=False)
     status: Mapped[str] = mapped_column(
         String(64), 
         nullable=False, 

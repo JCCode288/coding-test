@@ -42,7 +42,7 @@ export default function RepsDetailCard({ reps }) {
                      </AccordionTrigger>
                      <AccordionContent className="flex flex-col gap-2">
                         {reps.deals.map((dl) => (
-                           <Card className="p-4">
+                           <Card key={dl.id} className="p-4">
                               <CardTitle className="flex gap-2 items-center">
                                  <h3>{dl.client}</h3>
                                  <Link href={"/deals/" + dl.id}>
@@ -77,14 +77,14 @@ export default function RepsDetailCard({ reps }) {
                      </AccordionTrigger>
                      <AccordionContent className="flex flex-col gap-2">
                         {reps.clients.map((cl) => (
-                           <Card className="p-4">
+                           <Card key={cl.id} className="p-4">
                               <CardTitle className="flex gap-2 items-center">
                                  <Link href={"/clients/" + cl.id}>
                                     <h3>{cl.name}</h3>
                                  </Link>
                               </CardTitle>
                               <CardContent>
-                                 <div className="flex w-fit gap-2 items-center mb-2">
+                                 <div className="flex w-fit gap-1 items-center mb-2">
                                     <h4 className="text-md">
                                        {cl.industry}
                                     </h4>
@@ -93,8 +93,7 @@ export default function RepsDetailCard({ reps }) {
                               </CardContent>
                               <CardFooter>
                                  <p className="flex-1 text-xs text-end">
-                                    Last Update at{" "}
-                                    {formatDate(cl.updated_date)}
+                                    Joined at {formatDate(cl.created_at)}
                                  </p>
                               </CardFooter>
                            </Card>
