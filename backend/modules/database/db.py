@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from .models import Base, SalesReps, Deals, Clients, Skills
 from .llm_models import LLMBase
-from modules.llm.vector_db import insert_docs
 from dto.ai_dto import VectorMetadata
 from langchain_core.documents import Document
 import json
@@ -31,35 +30,33 @@ def init_llm_db():
 
 def migrate():
   # Load dummy data
-  init_db()
-  
-  with open("../" + "dummyData.json", "r") as f: # path perspective of main.py
-      DUMMY_DATA = json.load(f)
-  
-  skills = {}
-  clients = {}
-  
-  def map_skill(skill: str):
-    if skill in skills:
-      return skills[skill]
-
-    skills[skill] = Skills(name=skill)
+  with Session(init_db()) as session:
+    with open("../" + "dummyData.json", "r") as f: # path perspective of main.py
+        DUMMY_DATA = json.load(f)
     
-    return skills[skill]
-  
-  def map_clients(client):
-    if client['name'] in clients:
+    skills = {}
+    clients = {}
+    
+    def map_skill(skill: str):
+      if skill in skills:
+        return skills[skill]
+
+      skills[skill] = Skills(name=skill)
+      
+      return skills[skill]
+    
+    def map_clients(client):
+      if client['name'] in clients:
+        return clients[client['name']]
+      
+      clients[client['name']] = Clients(**client)   
+      
       return clients[client['name']]
     
-    clients[client['name']] = Clients(**client)   
-    
-    return clients[client['name']]
-  
-  with Session(init_db()) as session:
     all_reps = []    
     docs = []
     industries = {}
-    
+     
     for sales_reps in DUMMY_DATA['salesReps']:
       # reps = SalesReps(**sales_reps)
       reps = SalesReps(
@@ -117,9 +114,12 @@ def migrate():
         )
       
       docs.append(data)
+      
+    print("=== Insert Vector Result ===")
+    print(docs)
+    print("=== Insert Vector Result ===")
+      
+    return docs
     
-    res = insert_docs(docs)
-    print("=== Insert Vector Result ===")
-    print(res)
-    print("=== Insert Vector Result ===")
+    
     
