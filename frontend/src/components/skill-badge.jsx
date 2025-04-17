@@ -12,10 +12,10 @@ export function SkillBadge({ skill, repsId }) {
    };
 
    return (
-      <HoverCard openDelay={800} onOpenChange={handleOpen}>
+      <HoverCard openDelay={500} onOpenChange={handleOpen}>
          <Badge
             variant="outline"
-            className="border-green-600 bg-green-600 bg-opacity-30 text-green-950 cursor-pointer active:bg-opacity-50 hover:bg-opacity-70"
+            className="border-green-600 bg-green-600 bg-opacity-30 text-green-950 active:bg-opacity-50 hover:bg-opacity-70"
          >
             <HoverCardTrigger>{skill.name}</HoverCardTrigger>
          </Badge>

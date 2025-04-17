@@ -1,3 +1,4 @@
+import PageHeader from "@/components/page-header";
 import RepsDetailCard from "@/components/reps-detail";
 import { getRepsById } from "@/lib/api";
 
@@ -7,5 +8,10 @@ export default async function RepsDetail({ params }) {
 
    const { data: rep } = await getRepsById(id);
 
-   return <RepsDetailCard reps={rep} />;
+   return (
+      <>
+         <PageHeader name="Representative Detail" />
+         <RepsDetailCard reps={rep} />;
+      </>
+   );
 }
