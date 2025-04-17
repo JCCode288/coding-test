@@ -43,20 +43,6 @@ class SalesReps(Base):
         back_populates="reps",
     )
     
-    @property
-    def total_won(self) -> int | None:
-        if not self.deals: return None
-        
-        def add_won(prev: int, deal: Deals):
-            if deal.status != "Closed Won":
-                return prev
-            
-            prev += deal.value
-            return prev
-        
-        total = reduce(add_won, self.deals, 0)
-        return total
-            
     
 class Skills(Base):
     __tablename__ = "Skills"
@@ -83,7 +69,6 @@ class Deals(Base):
     reps_id: Mapped[int] = mapped_column(ForeignKey("SalesReps.id"))
     reps: Mapped["SalesReps"] = relationship(
         back_populates="deals",
-        
     )
     client_joined: Mapped["Clients"] = relationship(
         "Clients",
