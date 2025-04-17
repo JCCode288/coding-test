@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
 import os
-from pymilvus import model
 from langchain_milvus import Milvus
 from langchain_huggingface import HuggingFaceEmbeddings
 
