@@ -15,9 +15,10 @@ export default function PagePagination({
    baseUrl,
    total_page,
    current_page,
+   limit,
 }) {
    const searchParams = useSearchParams();
-   const limit = searchParams.get("limit") ?? 10;
+   limit = limit ?? searchParams.get("limit") ?? 10;
 
    const prevPage = useMemo(
       () => prevPageUrl(baseUrl, current_page, total_page)(+limit),
@@ -29,7 +30,7 @@ export default function PagePagination({
    );
 
    return (
-      <Pagination>
+      <Pagination className="shrink-0 mb-4">
          <PaginationContent>
             <PaginationItem>
                <PaginationPrevious

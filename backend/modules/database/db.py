@@ -13,10 +13,8 @@ import os
 DB_PATH = os.environ.get("DB_PATH")
 LLM_DB_PATH = os.environ.get("LLM_DB_PATH")
 
-engine = create_engine(f"sqlite://{DB_PATH}", echo=True)
-llm_engine = create_engine(f"sqlite://{LLM_DB_PATH}", echo=True)
-
 def init_db():
+  engine = create_engine(f"sqlite://{DB_PATH}", echo=True)
   Base.metadata.create_all(engine)
   
   return engine
@@ -25,6 +23,7 @@ def init_llm_db():
   """
   this DB mostly not used but will be used for LLM response caching
   """
+  llm_engine = create_engine(f"sqlite://{LLM_DB_PATH}", echo=True)
   LLMBase.metadata.create_all(llm_engine)
   
   return llm_engine
@@ -56,7 +55,7 @@ def migrate():
     
     return clients[client['name']]
   
-  with Session(engine) as session:
+  with Session(init_db()) as session:
     all_reps = []    
     docs = []
     industries = {}

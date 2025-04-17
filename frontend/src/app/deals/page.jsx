@@ -8,7 +8,7 @@ import Link from "next/link";
 export default async function DealsPage({ searchParams }) {
    const query = await searchParams;
    const page = query?.page ?? 1;
-   const limit = query?.limit ?? 10;
+   const limit = query?.limit ?? 15;
 
    const { data: deals, pagination } = await getDeals(page, limit);
 
@@ -24,7 +24,7 @@ export default async function DealsPage({ searchParams }) {
             <DealsTable deals={deals} />
          </section>
 
-         <PagePagination baseUrl="/deals" {...pagination} />
+         <PagePagination baseUrl="/deals" {...pagination} limit={limit} />
       </>
    );
 }
