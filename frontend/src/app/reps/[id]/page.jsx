@@ -11,7 +11,10 @@ export default async function RepsDetail({ params }) {
    return (
       <>
          <PageHeader name="Representative Detail" />
-         <RepsDetailCard reps={rep} />;
+
+         <section className="flex m-8">
+            <RepsDetailCard reps={rep} />;
+         </section>
       </>
    );
 }
