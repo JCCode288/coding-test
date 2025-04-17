@@ -159,43 +159,53 @@ async def get_client_by_id(id: int, db: Session = Depends(get_db)):
     )
     
     data = db.scalars(stmt).unique().one()
-    
+   
     return {"data": data}
 
 @api_router.post('/clients', status_code=201)
-async def add_client(body: AddClientDTO, db: Session = Depends(get_db)):
+async def add_client(body: AddClientDTO, session: Session = Depends(get_db)):
     """
     Add new clients
     """
-    
-    # check reps id
-    reps_stmt = (
-        select(SalesReps)
-        .where(SalesReps.id == body.reps_id)
-    )
-    
-    reps = db.execute(reps_stmt).fetchone()
-    
-    if not len(reps):
-        raise HTTPException(400, "invalid sales reps")
-    
-    print(reps)
-    
-    stmt = (
-        insert(Clients)
-        .values(
-            name=body.name,
-            contact=body.contact,
-            industry=body.industry,
-            reps_id=reps[0].id
+    with session as db:
+        # check reps id
+        reps_stmt = (
+            select(SalesReps)
+            .where(SalesReps.id == body.reps_id)
         )
-        .returning(Clients.id, Clients.name)
-    )
-    
-    data = db.execute(stmt).mappings().one()
-    db.commit()
-    
-    return {"data": data}
+        
+        reps = db.execute(reps_stmt).fetchone()
+        
+        if not len(reps):
+            raise HTTPException(400, "invalid sales reps")
+            
+        stmt = (
+            insert(Clients)
+            .values(
+                name=body.name,
+                contact=body.contact,
+                industry=body.industry,
+                reps_id=body.reps_id
+            )
+            .returning(Clients.id, Clients.name)
+        )
+        
+        data = db.execute(stmt).mappings().one()
+        db.commit()
+         
+        docs = [
+            Document(
+                page_content=f"Client {body.name} has been added working on {body.industry} industry can be contacted on {body.contact}. represented by {reps[0].name}",
+                metadata=VectorMetadata(
+                    industry=body.industry,
+                    reps_name=reps[0].name,
+                    reps_region=reps[0].region
+                )
+            )
+        ]
+        insert_docs(docs)
+        
+        return {"data": data}
 
 @api_router.get("/deals", status_code=200)
 async def get_deals(query: Annotated[QueryParam, Query()], db: Session = Depends(get_db)):

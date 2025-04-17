@@ -8,7 +8,7 @@ import Link from "next/link";
 export default async function HomePage({ searchParams }) {
    const query = await searchParams;
    const page = query?.page ?? 1;
-   const limit = query?.limit ?? 10;
+   const limit = query?.limit ?? 12;
 
    const { data: reps, pagination } = await getSalesReps(page, limit);
 
@@ -28,7 +28,7 @@ export default async function HomePage({ searchParams }) {
             </div>
          </section>
 
-         <PagePagination baseUrl="/" {...pagination} />
+         <PagePagination baseUrl="/" {...pagination} limit={limit} />
       </>
    );
 }

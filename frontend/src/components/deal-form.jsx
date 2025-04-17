@@ -136,8 +136,10 @@ export default function DealForm({ submitFunc, deal, reps }) {
                               </SelectTrigger>
                            </FormControl>
                            <SelectContent className="flex w-full">
-                              {Object.values(DealStatus).map((st) => (
-                                 <SelectItem value={st}>{st}</SelectItem>
+                              {Object.values(DealStatus).map((st, idx) => (
+                                 <SelectItem key={`st-${idx}`} value={st}>
+                                    {st}
+                                 </SelectItem>
                               ))}
                            </SelectContent>
                         </Select>

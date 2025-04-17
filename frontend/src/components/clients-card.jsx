@@ -12,8 +12,8 @@ import Link from "next/link";
 
 export default function ClientsCard({ client }) {
    return (
-      <Card className="max-w-md max-h-42">
-         <CardHeader>
+      <Card className="flex flex-col flex-1 max-w-md max-h-56">
+         <CardHeader className="flex-1">
             <CardTitle>{client.name}</CardTitle>
             <CardDescription>
                <h4 className="font-light">{client.contact}</h4>
@@ -21,7 +21,7 @@ export default function ClientsCard({ client }) {
             </CardDescription>
          </CardHeader>
 
-         <CardFooter className="justify-end">
+         <CardFooter className="shrink-0 justify-end">
             <Link href={"/clients/" + client.id}>
                <Button variant="outline">Detail</Button>
             </Link>

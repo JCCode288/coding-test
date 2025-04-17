@@ -10,8 +10,11 @@ import RedisCache from "../redis/cache";
 
 const cache = new RedisCache();
 
-export async function getSalesReps(page = 1, limit = 10) {
+export async function getSalesReps(page = 1, limit = 12) {
    try {
+      if (isNaN(+page) || isNaN(+limit))
+         throw new Error("Invalid Pagination");
+
       const cached = await cache.get(BE_Routes.SALES_REPS, page, limit);
       if (cached) return cached;
 
@@ -50,6 +53,8 @@ export async function getRepsById(id) {
 }
 export async function addSalesReps(salesRepsData) {
    try {
+      await MainQueue.waitUntilReady();
+
       const data = {
          type: MainJobType.ADD_REPS,
          payload: { salesRepsData },
@@ -72,8 +77,11 @@ export async function addSalesReps(salesRepsData) {
       throw err;
    }
 }
-export async function getClients(page = 1, limit = 10) {
+export async function getClients(page = 1, limit = 12) {
    try {
+      if (isNaN(+page) || isNaN(+limit))
+         throw new Error("Invalid Pagination");
+
       const cached = await cache.get(BE_Routes.CLIENTS, page, limit);
       if (cached) return cached;
 
@@ -111,6 +119,8 @@ export async function getClientsById(id) {
 }
 export async function addClients(clientData) {
    try {
+      await MainQueue.waitUntilReady();
+
       const data = {
          type: MainJobType.ADD_CLIENT,
          payload: { clientData },
@@ -132,8 +142,11 @@ export async function addClients(clientData) {
       throw err;
    }
 }
-export async function getDeals(page = 1, limit = 10) {
+export async function getDeals(page = 1, limit = 15) {
    try {
+      if (isNaN(+page) || isNaN(+limit))
+         throw new Error("Invalid Pagination");
+
       const cached = await cache.get(BE_Routes.DEALS, page, limit);
       if (cached) return cached;
 
@@ -171,6 +184,8 @@ export async function getDealsById(id) {
 }
 export async function addDeals(dealData) {
    try {
+      await MainQueue.waitUntilReady();
+
       const data = {
          type: MainJobType.ADD_DEAL,
          payload: { dealData },
@@ -195,6 +210,8 @@ export async function addDeals(dealData) {
 }
 export async function editDeals(id, dealData) {
    try {
+      await MainQueue.waitUntilReady();
+
       const data = {
          type: MainJobType.EDIT_DEAL,
          payload: { dealData, id },
@@ -218,6 +235,8 @@ export async function editDeals(id, dealData) {
 }
 export async function deleteDeals(id) {
    try {
+      await MainQueue.waitUntilReady();
+
       const data = {
          type: MainJobType.DELETE_DEAL,
          payload: { id },
@@ -273,6 +292,8 @@ export async function getSkillById(id) {
 
 export async function addSkill(name) {
    try {
+      await MainQueue.waitUntilReady();
+
       const data = {
          type: MainJobType.ADD_SKILL,
          payload: { name },
