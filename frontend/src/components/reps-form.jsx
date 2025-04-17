@@ -72,22 +72,7 @@ export default function RepsForm({ submitFunc, reps }) {
                      </FormItem>
                   )}
                />
-               <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => (
-                     <FormItem>
-                        <FormLabel>Representative Role</FormLabel>
-                        <FormControl>
-                           <Input placeholder="reps role" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                           This is representative role.
-                        </FormDescription>
-                        <FormMessage />
-                     </FormItem>
-                  )}
-               />
+
                <FormField
                   control={form.control}
                   name="region"

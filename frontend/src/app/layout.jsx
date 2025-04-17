@@ -32,10 +32,6 @@ export default function RootLayout({ children, detail }) {
                <SidebarInset>
                   <Suspense fallback={<Loading />}>{children}</Suspense>
                   <div>{detail}</div>
-
-                  <Suspense fallback={<>Prompting..</>}>
-                     <PromptSection />
-                  </Suspense>
                </SidebarInset>
             </SidebarProvider>
          </body>

@@ -4,6 +4,7 @@ import { GalleryVerticalEnd } from "lucide-react";
 import {
    Sidebar,
    SidebarContent,
+   SidebarFooter,
    SidebarGroup,
    SidebarHeader,
    SidebarMenu,
@@ -15,6 +16,8 @@ import {
    SidebarRail,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import PromptSection from "./prompt-section";
+import { Suspense } from "react";
 
 // This is sample data.
 const data = {
@@ -68,10 +71,7 @@ export function AppSidebar({ ...props }) {
                            <SidebarMenuSub>
                               {item.items.map((item) => (
                                  <SidebarMenuSubItem key={item.title}>
-                                    <SidebarMenuSubButton
-                                       asChild
-                                       isActive={item.isActive}
-                                    >
+                                    <SidebarMenuSubButton asChild>
                                        <Link href={item.url}>
                                           {item.title}
                                        </Link>
@@ -85,6 +85,11 @@ export function AppSidebar({ ...props }) {
                </SidebarMenu>
             </SidebarGroup>
          </SidebarContent>
+         <SidebarFooter>
+            <Suspense fallback={<>Prompting..</>}>
+               <PromptSection />
+            </Suspense>
+         </SidebarFooter>
          <SidebarRail />
       </Sidebar>
    );

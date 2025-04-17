@@ -5,10 +5,8 @@ import BE_Routes from "@/utils/constants/backend.routes";
 import { MainJobType } from "@/utils/constants/bullmq.name";
 import { cookies } from "next/headers";
 import { MainEventListener, MainQueue } from "../bull-worker/queue";
-import MainWorker from "../bull-worker/main.worker";
 import { MAIN_QUEUE_CONF } from "@/utils/constants/job.config";
 import RedisCache from "../redis/cache";
-import { QueueEvents } from "bullmq";
 
 const cache = new RedisCache();
 
@@ -307,7 +305,9 @@ export async function promptAI(prompt) {
       };
       const { data } = await Axios.post(BE_Routes.AI, payload);
 
-      return data.answer;
+      console.log(data);
+
+      return data.content;
    } catch (err) {
       console.log("=== Prompt AI Error ===");
       console.log(err);
