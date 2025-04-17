@@ -19,14 +19,9 @@ import {
 } from "@/components/ui/accordion";
 import Link from "next/link";
 import { formatDate } from "@/utils/date";
+import ChartPie from "./chart-pie";
 
 export default function RepsDetailCard({ reps }) {
-   const { setIsOpen } = useContext(ModalContext);
-
-   const handleClose = () => {
-      if (setIsOpen) setIsOpen(() => false);
-   };
-
    return (
       <section className="flex-1">
          <Card className="p-4">
@@ -35,6 +30,12 @@ export default function RepsDetailCard({ reps }) {
                {reps.role} - {reps.region}
             </CardDescription>
             <CardContent className="gap-2 flex flex-col">
+               <ChartPie
+                  title="Performance"
+                  desc="Representative Deals performance"
+                  chartData={reps.chart}
+               />
+
                <Accordion type="single" collapsible>
                   <AccordionItem value="item-1">
                      <AccordionTrigger className="text-lg font-medium text-gray-800">
