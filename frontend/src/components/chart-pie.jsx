@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/chart";
 
 export default function ChartPie({ chartData, title, desc, footerDesc }) {
-   console.log(chartData);
    const { data, config, tag, tag_val, data_key, name_key, active_idx } =
       chartData;
 

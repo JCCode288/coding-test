@@ -29,21 +29,28 @@ const promptSchema = z.object({
 });
 
 export default function PromptSection() {
-   const [open, setOpen] = useState(false);
-
-   const [answer, setAnswer] = useState("");
+   const [open, setOpen] = useState(() => false);
+   const [loading, setLoading] = useState(() => false);
+   const [answer, setAnswer] = useState(() => "");
    const form = useForm({
       resolver: zodResolver(promptSchema),
       defaultValues: getDefaults(promptSchema),
    });
 
    const handleAskQuestion = async ({ question }) => {
+      if (loading) return;
+
+      setLoading(() => true);
       try {
          const aiAnswer = await promptAI(question);
          setAnswer(() => marked.parse(aiAnswer));
+
          console.log(answer);
          form.setValue("question", "");
+
+         setLoading(() => false);
       } catch (error) {
+         setLoading(() => false);
          console.error("Error in AI request:", error);
       }
    };
@@ -88,6 +95,7 @@ export default function PromptSection() {
                                  <Input
                                     placeholder="Ask a question!"
                                     {...field}
+                                    disabled={loading}
                                  />
                               </FormControl>
                            </FormItem>
@@ -97,6 +105,7 @@ export default function PromptSection() {
                         variant="outline"
                         className="mt-2 float-end cursor-pointer"
                         type="submit"
+                        disabled={loading}
                      >
                         Ask
                      </Button>
