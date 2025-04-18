@@ -7,8 +7,7 @@ import { cookies } from "next/headers";
 import { MainEventListener, MainQueue } from "../bull-worker/queue";
 import { MAIN_QUEUE_CONF } from "@/utils/constants/job.config";
 import RedisCache from "../redis/cache";
-import * as rc from "randomcolor";
-import { formatCurrency } from "@/utils/currency";
+import { dealChartParser } from "@/utils/chart.parser";
 
 const cache = new RedisCache();
 
@@ -44,72 +43,7 @@ export async function getRepsById(id) {
 
       const { data } = await Axios.get(url);
 
-      const recap = {
-         total_valuation: 0,
-      };
-
-      const status = new Set();
-
-      for (const deal of data.data.deals) {
-         recap.total_valuation += deal.value;
-         status.add(deal.status);
-
-         if (!recap[deal.status])
-            recap[deal.status] = {
-               count: 0,
-               valuation: 0,
-            };
-
-         recap[deal.status].count++;
-         recap[deal.status].valuation += deal.value;
-      }
-
-      const status_chart = [];
-      const colors = rc({
-         hue: "green",
-         count: status.size,
-      });
-
-      const chart_config = {
-         valuation: {
-            label: "Valuation",
-         },
-      };
-
-      let i = 0;
-      let maxCount = -Infinity;
-      let maxIdx = 0;
-
-      status.forEach((stats) => {
-         const color = colors[i];
-
-         status_chart.push({
-            status: stats,
-            valuation: recap[stats].valuation,
-            count: recap[stats].count,
-            fill: color,
-         });
-
-         if (recap[stats].count > maxCount) {
-            maxCount = recap[stats].count;
-            maxIdx = status_chart.length - 1;
-         }
-
-         chart_config[stats] = {
-            label: stats,
-         };
-         i++;
-      });
-
-      data.data.chart = {
-         data: status_chart,
-         config: chart_config,
-         tag: "Total Valuation",
-         tag_val: `$ ${formatCurrency(recap.total_valuation)}`,
-         data_key: "count",
-         name_key: "status",
-         active_idx: maxIdx,
-      };
+      data.data.chart = dealChartParser(data.data.deals);
 
       return data;
    } catch (err) {
@@ -176,6 +110,9 @@ export async function getClientsById(id) {
       const url = `${BE_Routes.CLIENTS}/${id}`;
 
       const { data } = await Axios.get(url);
+
+      if (data.data?.deals)
+         data.data.chart = dealChartParser(data.data.deals);
 
       return data;
    } catch (err) {

@@ -1,4 +1,4 @@
-import DealForm from "@/components/deal-form";
+import DealForm from "@/components/deals-form";
 import { editDeals, getDealsById } from "@/lib/api";
 import { Suspense } from "react";
 
