@@ -113,7 +113,7 @@ export async function getClientsById(id) {
 
       if (data.data?.deals)
          data.data.chart = dealChartParser(data.data.deals);
-
+     
       return data;
    } catch (err) {
       console.log("=== Get Rep By ID Error ===");

@@ -5,6 +5,7 @@ import { Suspense } from "react";
 
 export default async function DealDetail({ params }) {
    const id = (await params).id;
+
    if (isNaN(+id)) return null;
 
    const { data: deal } = await getDealsById(id);

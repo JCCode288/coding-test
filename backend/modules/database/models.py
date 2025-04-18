@@ -43,7 +43,6 @@ class SalesReps(Base):
         back_populates="reps",
     )
     
-    
 class Skills(Base):
     __tablename__ = "Skills"
     id: Mapped[int] = mapped_column(primary_key=True)

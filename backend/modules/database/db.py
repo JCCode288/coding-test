@@ -41,6 +41,7 @@ def migrate():
       if skill in skills:
         return skills[skill]
 
+
       skills[skill] = Skills(name=skill)
       
       return skills[skill]
@@ -56,7 +57,7 @@ def migrate():
     all_reps = []    
     docs = []
     industries = {}
-     
+   
     for sales_reps in DUMMY_DATA['salesReps']:
       # reps = SalesReps(**sales_reps)
       reps = SalesReps(
@@ -120,6 +121,5 @@ def migrate():
     print("=== Insert Vector Result ===")
       
     return docs
-    
     
     

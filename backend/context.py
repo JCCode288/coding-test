@@ -4,7 +4,6 @@ from modules.database.db import init_db, init_llm_db, migrate
 from sqlalchemy.orm import Session
 from modules.llm.vector_db import init_vector, init_embedding
 
-
 context = {}
 
 @asynccontextmanager
@@ -34,7 +33,6 @@ async def get_db():
       raise err
     finally:
       session.close()
-      
   
 async def get_llm_db():
   if 'llm_db' not in context:
@@ -73,5 +71,4 @@ def query_docs(query: str, filter=None, limit=5):
       k=limit,
       expr=filter
     )
-  
   

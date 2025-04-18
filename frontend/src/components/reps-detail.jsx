@@ -35,7 +35,7 @@ export default function RepsDetailCard({ reps }) {
                   desc="Representative Deals performance"
                   chartData={reps.chart}
                />
-
+                    
                <Accordion type="single" collapsible>
                   <AccordionItem value="item-1">
                      <AccordionTrigger className="text-lg font-medium text-gray-800">
@@ -43,6 +43,7 @@ export default function RepsDetailCard({ reps }) {
                      </AccordionTrigger>
                      <AccordionContent className="flex flex-col gap-2">
                         {reps.deals.map((dl) => (
+
                            <Card key={dl.id} className="p-4">
                               <CardTitle className="flex gap-2 items-center">
                                  <h3>{dl.client}</h3>

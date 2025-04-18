@@ -26,6 +26,7 @@ export default function PromptSection() {
    const [open, setOpen] = useState(() => false);
    const [loading, setLoading] = useState(() => false);
    const [answer, setAnswer] = useState(() => "");
+
    const form = useForm({
       resolver: zodResolver(promptSchema),
       defaultValues: getDefaults(promptSchema),

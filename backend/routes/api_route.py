@@ -50,7 +50,7 @@ async def get_reps(
     )
     
     data = db.scalars(stmt).unique().all()
-    
+
     return {"data": data, "pagination": pagination}
         
 @api_router.get("/sales-reps/{id}")
