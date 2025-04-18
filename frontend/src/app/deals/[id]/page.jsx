@@ -1,16 +1,24 @@
-import { Button } from "@/components/ui/button";
+import DealsDetail from "@/components/deals-detail";
+import PageHeader from "@/components/page-header";
 import { getDealsById } from "@/lib/api";
-import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function DealDetailPage({ params }) {
-   const { id } = await params;
+export default async function DealDetail({ params }) {
+   const id = (await params).id;
+
    if (isNaN(+id)) return null;
 
    const { data: deal } = await getDealsById(id);
 
    return (
-      <section className="flex-1">
-         Deal Detail: {JSON.stringify(deal)}
-      </section>
+      <>
+         <PageHeader name="Deal Detail" />
+
+         <section className="flex-1 m-8">
+            <Suspense fallback={<>Loading</>}>
+               <DealsDetail deal={deal} />
+            </Suspense>
+         </section>
+      </>
    );
 }

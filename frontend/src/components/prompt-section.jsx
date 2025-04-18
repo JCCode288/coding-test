@@ -7,13 +7,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import getDefaults from "@/utils/zod.default";
-import {
-   Form,
-   FormControl,
-   FormField,
-   FormItem,
-   FormLabel,
-} from "./ui/form";
+import { Form, FormControl, FormField, FormItem } from "./ui/form";
 import { Button } from "./ui/button";
 import { marked } from "marked";
 import {
@@ -21,7 +15,7 @@ import {
    CollapsibleContent,
    CollapsibleTrigger,
 } from "./ui/collapsible";
-import { ChevronsUpDown } from "lucide-react";
+import { Maximize2Icon, Minimize2Icon } from "lucide-react";
 import { Separator } from "./ui/separator";
 
 const promptSchema = z.object({
@@ -29,21 +23,29 @@ const promptSchema = z.object({
 });
 
 export default function PromptSection() {
-   const [open, setOpen] = useState(false);
+   const [open, setOpen] = useState(() => false);
+   const [loading, setLoading] = useState(() => false);
+   const [answer, setAnswer] = useState(() => "");
 
-   const [answer, setAnswer] = useState("");
    const form = useForm({
       resolver: zodResolver(promptSchema),
       defaultValues: getDefaults(promptSchema),
    });
 
    const handleAskQuestion = async ({ question }) => {
+      if (loading) return;
+
+      setLoading(() => true);
       try {
          const aiAnswer = await promptAI(question);
          setAnswer(() => marked.parse(aiAnswer));
+
          console.log(answer);
          form.setValue("question", "");
+
+         setLoading(() => false);
       } catch (error) {
+         setLoading(() => false);
          console.error("Error in AI request:", error);
       }
    };
@@ -55,7 +57,11 @@ export default function PromptSection() {
                <div className="mb-1">Ask AI</div>
                <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="w-9 p-0">
-                     <ChevronsUpDown className="h-4 w-4" />
+                     {!open ? (
+                        <Maximize2Icon className="h-4 w-4" />
+                     ) : (
+                        <Minimize2Icon className="h-4 w-4" />
+                     )}
                      <span className="sr-only">Toggle</span>
                   </Button>
                </CollapsibleTrigger>
@@ -88,6 +94,7 @@ export default function PromptSection() {
                                  <Input
                                     placeholder="Ask a question!"
                                     {...field}
+                                    disabled={loading}
                                  />
                               </FormControl>
                            </FormItem>
@@ -97,6 +104,7 @@ export default function PromptSection() {
                         variant="outline"
                         className="mt-2 float-end cursor-pointer"
                         type="submit"
+                        disabled={loading}
                      >
                         Ask
                      </Button>

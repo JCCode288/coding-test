@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
-from context import get_db
+from context import get_db, query_docs, insert_docs
 from modules.database.models import SalesReps, Skills, Clients, Deals
 from sqlalchemy import select, insert, update, delete, desc
 from sqlalchemy.orm import Session, joinedload
@@ -8,7 +8,6 @@ from dto.main_dto import AddClientDTO, AddDealDTO, AddRepsDTO, AddSkillDTO, Edit
 from dto.ai_dto import AIPromptDTO, VectorMetadata
 from typing import Annotated
 from utils.pagination import get_pagination
-from modules.llm.vector_db import query_docs, insert_docs
 from modules.llm.model import get_model
 from langchain_core.documents import Document
 import json
@@ -51,7 +50,7 @@ async def get_reps(
     )
     
     data = db.scalars(stmt).unique().all()
-       
+
     return {"data": data, "pagination": pagination}
         
 @api_router.get("/sales-reps/{id}")

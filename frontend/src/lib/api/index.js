@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { MainEventListener, MainQueue } from "../bull-worker/queue";
 import { MAIN_QUEUE_CONF } from "@/utils/constants/job.config";
 import RedisCache from "../redis/cache";
+import { dealChartParser } from "@/utils/chart.parser";
 
 const cache = new RedisCache();
 
@@ -41,6 +42,8 @@ export async function getRepsById(id) {
       const url = `${BE_Routes.SALES_REPS}/${id}`;
 
       const { data } = await Axios.get(url);
+
+      data.data.chart = dealChartParser(data.data.deals);
 
       return data;
    } catch (err) {
@@ -108,6 +111,9 @@ export async function getClientsById(id) {
 
       const { data } = await Axios.get(url);
 
+      if (data.data?.deals)
+         data.data.chart = dealChartParser(data.data.deals);
+     
       return data;
    } catch (err) {
       console.log("=== Get Rep By ID Error ===");

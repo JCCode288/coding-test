@@ -55,14 +55,14 @@ easier to separate app logic and debugging if it was divided per modules
 
    LLM Module for AI (LLM) related
 
--  **Use Cases**
-
-   implementation of provided modules combined into one use cases for each routes
-
 -  **Vector Store**
 
    Vector Store used in this app is Milvus, this stems for scalability concern. We can start small locally if needed we can move to better separate Milvus Server by self-deploying or using platform like ziliz
 
 -  **Embedding Function**
 
-   For smaller project and self-deploying it, i prefer in house solution like using HuggingFace models for better customizing and vast selection for embedding model. however to mention that it needs resources locally for this app, and can pretty much slowing down the app startup time. but it also can be scalably improved by changing deployment to HuggingFace platform or straight changing the embedding model to pre-served one like OpenAIEmbedding
+   implementation of provided modules combined into one use cases for each routes
+
+-  **Vector Store**
+
+   Vector Store used in this app is Milvus, this stems for scalability concern. We can start small locally if needed we can move to better separate Milvus Server by self-deploying or using platform like ziliz

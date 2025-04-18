@@ -1,7 +1,5 @@
 "use client";
 
-import { useContext } from "react";
-import { ModalContext } from "./modal";
 import {
    Card,
    CardContent,
@@ -19,14 +17,11 @@ import {
 } from "@/components/ui/accordion";
 import Link from "next/link";
 import { formatDate } from "@/utils/date";
+import ChartPie from "./chart-pie";
+import { ArrowRight } from "lucide-react";
+import { Button } from "./ui/button";
 
 export default function RepsDetailCard({ reps }) {
-   const { setIsOpen } = useContext(ModalContext);
-
-   const handleClose = () => {
-      if (setIsOpen) setIsOpen(() => false);
-   };
-
    return (
       <section className="flex-1">
          <Card className="p-4">
@@ -35,6 +30,12 @@ export default function RepsDetailCard({ reps }) {
                {reps.role} - {reps.region}
             </CardDescription>
             <CardContent className="gap-2 flex flex-col">
+               <ChartPie
+                  title="Performance"
+                  desc="Representative Deals performance"
+                  chartData={reps.chart}
+               />
+                    
                <Accordion type="single" collapsible>
                   <AccordionItem value="item-1">
                      <AccordionTrigger className="text-lg font-medium text-gray-800">
@@ -42,14 +43,13 @@ export default function RepsDetailCard({ reps }) {
                      </AccordionTrigger>
                      <AccordionContent className="flex flex-col gap-2">
                         {reps.deals.map((dl) => (
-                           <Card className="p-4">
+
+                           <Card key={dl.id} className="p-4">
                               <CardTitle className="flex gap-2 items-center">
                                  <h3>{dl.client}</h3>
-                                 <Link href={"/deals/" + dl.id}>
-                                    <DealBadge status={dl.status} />
-                                 </Link>
+                                 <DealBadge status={dl.status} />
                               </CardTitle>
-                              <CardContent>
+                              <CardContent className="flex flex-row justify-between">
                                  <div className="flex w-fit gap-2 items-center mb-2">
                                     <h4 className="text-sm">Valuation</h4>
                                     <h5 className="text-md">
@@ -58,6 +58,16 @@ export default function RepsDetailCard({ reps }) {
                                           {formatCurrency(dl.value)}
                                        </strong>
                                     </h5>
+                                 </div>
+                                 <div>
+                                    <Link href={"/deals/" + dl.id}>
+                                       <Button
+                                          variant="ghost"
+                                          className="cursor-pointer"
+                                       >
+                                          Check Deal <ArrowRight />
+                                       </Button>
+                                    </Link>
                                  </div>
                               </CardContent>
                               <CardFooter>
@@ -77,24 +87,31 @@ export default function RepsDetailCard({ reps }) {
                      </AccordionTrigger>
                      <AccordionContent className="flex flex-col gap-2">
                         {reps.clients.map((cl) => (
-                           <Card className="p-4">
+                           <Card key={cl.id} className="p-4">
                               <CardTitle className="flex gap-2 items-center">
-                                 <Link href={"/clients/" + cl.id}>
-                                    <h3>{cl.name}</h3>
-                                 </Link>
+                                 <h3>{cl.name}</h3>
                               </CardTitle>
-                              <CardContent>
-                                 <div className="flex w-fit gap-2 items-center mb-2">
+                              <CardContent className="flex flex-row justify-between">
+                                 <div className="flex w-fit gap-1 items-center mb-2">
                                     <h4 className="text-md">
                                        {cl.industry}
                                     </h4>
                                     <h5 className="text-sm">Industry</h5>
                                  </div>
+                                 <div>
+                                    <Link href={"/clients/" + cl.id}>
+                                       <Button
+                                          variant="ghost"
+                                          className="cursor-pointer"
+                                       >
+                                          Check Client <ArrowRight />
+                                       </Button>
+                                    </Link>
+                                 </div>
                               </CardContent>
                               <CardFooter>
                                  <p className="flex-1 text-xs text-end">
-                                    Last Update at{" "}
-                                    {formatDate(cl.updated_date)}
+                                    Joined at {formatDate(cl.created_at)}
                                  </p>
                               </CardFooter>
                            </Card>

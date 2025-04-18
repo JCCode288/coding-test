@@ -4,6 +4,7 @@ from sqlalchemy import String, Text, DateTime, Table, Column, BigInteger
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from datetime import datetime
+from functools import reduce
 
 class Base(DeclarativeBase):
     created_at: Mapped[datetime] = mapped_column(
@@ -40,7 +41,6 @@ class SalesReps(Base):
     )
     clients: Mapped[List["Clients"]] = relationship(
         back_populates="reps",
-        
     )
     
 class Skills(Base):
@@ -57,7 +57,7 @@ class Skills(Base):
 class Deals(Base):
     __tablename__ = "Deals"
     id: Mapped[int] = mapped_column(primary_key=True)
-    value: Mapped[str] = mapped_column(BigInteger(), nullable=False)
+    value: Mapped[int] = mapped_column(BigInteger(), nullable=False)
     status: Mapped[str] = mapped_column(
         String(64), 
         nullable=False, 
@@ -68,7 +68,6 @@ class Deals(Base):
     reps_id: Mapped[int] = mapped_column(ForeignKey("SalesReps.id"))
     reps: Mapped["SalesReps"] = relationship(
         back_populates="deals",
-        
     )
     client_joined: Mapped["Clients"] = relationship(
         "Clients",
