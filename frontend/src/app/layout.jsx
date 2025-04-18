@@ -3,7 +3,6 @@ import "./globals.css";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Suspense } from "react";
 import Loading from "./loading";
-import PromptSection from "@/components/prompt-section";
 import { AppSidebar } from "@/components/app-sidebar";
 
 const geistSans = Geist({

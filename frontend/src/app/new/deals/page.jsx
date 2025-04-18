@@ -1,4 +1,4 @@
-import DealForm from "@/components/deal-form";
+import DealForm from "@/components/deals-form";
 import PageHeader from "@/components/page-header";
 import { addDeals, getSalesReps } from "@/lib/api";
 import { Suspense } from "react";

@@ -1,3 +1,4 @@
+import ClientsDetail from "@/components/clients-detail";
 import { getClientsById } from "@/lib/api";
 
 export default async function ClientDetail({ params }) {
@@ -8,7 +9,7 @@ export default async function ClientDetail({ params }) {
 
    return (
       <section className="flex-1 m-8">
-         Client Detail: {JSON.stringify(client)}
+         <ClientsDetail client={client} />
       </section>
    );
 }

@@ -7,13 +7,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import getDefaults from "@/utils/zod.default";
-import {
-   Form,
-   FormControl,
-   FormField,
-   FormItem,
-   FormLabel,
-} from "./ui/form";
+import { Form, FormControl, FormField, FormItem } from "./ui/form";
 import { Button } from "./ui/button";
 import { marked } from "marked";
 import {
@@ -21,7 +15,7 @@ import {
    CollapsibleContent,
    CollapsibleTrigger,
 } from "./ui/collapsible";
-import { ChevronsUpDown } from "lucide-react";
+import { Maximize2Icon, Minimize2Icon } from "lucide-react";
 import { Separator } from "./ui/separator";
 
 const promptSchema = z.object({
@@ -62,7 +56,11 @@ export default function PromptSection() {
                <div className="mb-1">Ask AI</div>
                <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="w-9 p-0">
-                     <ChevronsUpDown className="h-4 w-4" />
+                     {!open ? (
+                        <Maximize2Icon className="h-4 w-4" />
+                     ) : (
+                        <Minimize2Icon className="h-4 w-4" />
+                     )}
                      <span className="sr-only">Toggle</span>
                   </Button>
                </CollapsibleTrigger>
