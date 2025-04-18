@@ -1,4 +1,5 @@
 import ClientsDetail from "@/components/clients-detail";
+import PageHeader from "@/components/page-header";
 import { getClientsById } from "@/lib/api";
 
 export default async function ClientDetail({ params }) {
@@ -8,8 +9,11 @@ export default async function ClientDetail({ params }) {
    const { data: client } = await getClientsById(id);
 
    return (
-      <section className="flex-1 m-8">
-         <ClientsDetail client={client} />
-      </section>
+      <>
+         <PageHeader name="Client Detail" />
+         <section className="flex-1 m-8">
+            <ClientsDetail client={client} />
+         </section>
+      </>
    );
 }
